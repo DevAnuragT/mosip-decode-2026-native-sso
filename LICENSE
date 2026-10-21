@@ -1,0 +1,10 @@
+Mozilla Public License Version 2.0
+==================================
+
+This repository (the MOSIP Decode 2026 Native SSO submission: mobile apps, SDK, tests, Postman
+collection, UI theme and documentation) is licensed under the Mozilla Public License, v. 2.0,
+the licence used by MOSIP eSignet. You can obtain a copy of the licence at
+https://mozilla.org/MPL/2.0/.
+
+The eSignet and ThunderID changes live in their own repositories under their own licences
+(MPL-2.0 and Apache-2.0 respectively).

@@ -1,19 +1,17 @@
 package org.mosip.nativesso
 
-import android.util.Base64
 import org.json.JSONObject
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.util.Base64
 
 /** Base64url, hashing and JSON helpers shared by the SDK. */
 object Codec {
-    private const val B64 = Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP
-
-    fun b64url(bytes: ByteArray): String = Base64.encodeToString(bytes, B64)
+    fun b64url(bytes: ByteArray): String = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
     fun b64url(text: String): String = b64url(text.toByteArray(StandardCharsets.UTF_8))
-    fun b64urlDecode(text: String): ByteArray = Base64.decode(text, B64)
+    fun b64urlDecode(text: String): ByteArray = Base64.getUrlDecoder().decode(text)
 
     fun sha256(bytes: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(bytes)
     fun sha256(text: String): ByteArray = sha256(text.toByteArray(StandardCharsets.UTF_8))

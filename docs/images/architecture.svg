@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800" width="1400" height="800" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16">
+  <title>Native SSO architecture: Vendor Wallet, Vendor Health, eSignet (Go) with the ThunderID engine</title>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#F0652A"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1B5E9E"/></marker>
+    <marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+  </defs>
+  <rect width="1400" height="800" fill="#FFFFFF"/>
+
+  <!-- Phone -->
+  <rect x="20" y="40" width="500" height="665" rx="28" fill="#FFFFFF" stroke="#334155" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="44" y="74" font-weight="700" font-size="18" fill="#0F172A">Android phone</text>
+  <text x="190" y="74" fill="#64748B">one vendor signing certificate</text>
+
+  <!-- Wallet -->
+  <rect x="40" y="100" width="460" height="240" rx="16" fill="#EAF2FA" stroke="#1B5E9E" stroke-width="2"/>
+  <text x="60" y="128" font-weight="700" font-size="18" fill="#1B5E9E">Vendor Wallet (super app)</text>
+  <rect x="60" y="142" width="420" height="40" rx="10" fill="#FFFFFF" stroke="#1B5E9E"/>
+  <text x="76" y="168" fill="#0F172A">Key A · EC P-256 · Android Keystore</text>
+  <rect x="60" y="192" width="420" height="40" rx="10" fill="#FFFFFF" stroke="#1B5E9E"/>
+  <text x="76" y="218" fill="#0F172A">Encrypted session store</text>
+  <rect x="60" y="242" width="420" height="80" rx="10" fill="#FFFFFF" stroke="#1B5E9E"/>
+  <text x="76" y="268" fill="#0F172A" font-weight="600">NativeSsoProvider (IPC)</text>
+  <text x="76" y="294" fill="#64748B">signature-level permission</text>
+  <text x="76" y="314" fill="#64748B" font-size="16">GET_SSO_CREDENTIALS · SIGN_DPOP</text>
+
+  <!-- Health -->
+  <rect x="40" y="470" width="460" height="200" rx="16" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+  <text x="60" y="500" font-weight="700" font-size="18" fill="#2E7D32">Vendor Health (child app)</text>
+  <text x="60" y="524" fill="#64748B">no key, no secret of its own</text>
+  <rect x="60" y="540" width="420" height="40" rx="10" fill="#FFFFFF" stroke="#2E7D32"/>
+  <text x="76" y="566" fill="#0F172A">RemoteDpopSigner (Wallet signs)</text>
+  <rect x="60" y="592" width="420" height="40" rx="10" fill="#FFFFFF" stroke="#2E7D32"/>
+  <text x="76" y="618" fill="#0F172A">Token exchange + userinfo client</text>
+
+  <!-- Arrow 4 IPC -->
+  <line x1="270" y1="340" x2="270" y2="470" stroke="#1B5E9E" stroke-width="2.5" marker-start="url(#ab)" marker-end="url(#ab)"/>
+  <text x="286" y="392" fill="#1B5E9E" font-weight="700">4</text>
+  <text x="304" y="392" fill="#0F172A">IPC: id_token,</text>
+  <text x="286" y="412" fill="#0F172A">device_secret,</text>
+  <text x="286" y="432" fill="#0F172A">DPoP proof (Key A)</text>
+
+  <!-- Login UI -->
+  <rect x="585" y="45" width="220" height="75" rx="14" fill="#F1F5F9" stroke="#334155" stroke-width="1.5"/>
+  <text x="695" y="76" text-anchor="middle" font-weight="700" fill="#0F172A">OIDC login UI</text>
+  <text x="695" y="100" text-anchor="middle" fill="#64748B">browser / Custom Tab</text>
+  <line x1="585" y1="82" x2="520" y2="82" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)" marker-start="url(#ah)"/>
+  <line x1="805" y1="96" x2="910" y2="96" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)" marker-start="url(#ah)"/>
+  <text x="560" y="146" fill="#F0652A" font-weight="700">2</text>
+  <text x="578" y="146" fill="#0F172A">login + consent in Custom Tab</text>
+
+  <!-- Server -->
+  <rect x="890" y="40" width="490" height="730" rx="22" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+  <text x="910" y="66" font-weight="700" font-size="18" fill="#0F172A">Server · eSignet (Go)</text>
+  <rect x="910" y="82" width="450" height="393" rx="16" fill="#FDEEE7" stroke="#F0652A" stroke-width="2" transform="translate(0,0)"/>
+  <text x="1135" y="108" font-weight="700" fill="#F0652A">ThunderID engine</text>
+  <rect x="930" y="122" width="410" height="133" rx="10" fill="#FFFFFF" stroke="#F0652A"/>
+  <text x="946" y="148" font-weight="600" fill="#0F172A">PAR · authorize · token</text>
+  <text x="946" y="174" fill="#0F172A">Authorization-code grant</text>
+  <text x="946" y="200" fill="#64748B">device_sso: mint device_secret</text>
+  <text x="946" y="226" fill="#64748B">id_token gets ds_hash + sid</text>
+  <rect x="930" y="268" width="410" height="142" rx="10" fill="#FFFFFF" stroke="#F0652A"/>
+  <text x="946" y="294" font-weight="600" fill="#0F172A">Token exchange (RFC 8693)</text>
+  <text x="946" y="320" fill="#64748B">bindings: ds_hash · sid · cnf.jkt</text>
+  <text x="946" y="344" fill="#64748B">· sub · scope ⊆ grant</text>
+  <text x="946" y="370" fill="#64748B">+ vendor family, derived consent</text>
+  <text x="946" y="394" fill="#64748B">→ interaction_required if not covered</text>
+  <rect x="930" y="422" width="410" height="40" rx="10" fill="#FFFFFF" stroke="#F0652A"/>
+  <text x="946" y="448" fill="#0F172A" font-weight="600">userinfo (DPoP, ath)</text>
+
+  <!-- Providers -->
+  <line x1="1135" y1="475" x2="1135" y2="500" stroke="#334155" stroke-width="2" marker-end="url(#as)"/>
+  <rect x="910" y="502" width="450" height="80" rx="12" fill="#F1F5F9" stroke="#334155"/>
+  <text x="926" y="528" font-weight="600" fill="#0F172A">eSignet DeviceSecretProvider</text>
+  <text x="926" y="552" fill="#64748B">generate / validate (signed, then encrypted)</text>
+  <text x="926" y="572" fill="#64748B">vendor family · derived consent</text>
+  <line x1="1020" y1="582" x2="1020" y2="602" stroke="#334155" stroke-width="2" marker-end="url(#as)"/>
+  <line x1="1250" y1="582" x2="1250" y2="602" stroke="#334155" stroke-width="2" marker-end="url(#as)"/>
+  <rect x="910" y="604" width="220" height="86" rx="12" fill="#F1F5F9" stroke="#334155"/>
+  <text x="926" y="630" font-weight="600" fill="#0F172A">keymanager</text>
+  <text x="926" y="654" fill="#64748B">OIDC signing key</text>
+  <text x="926" y="674" fill="#64748B">DEVICE_SECRET_ENC</text>
+  <rect x="1140" y="604" width="220" height="86" rx="12" fill="#F1F5F9" stroke="#334155"/>
+  <text x="1156" y="630" font-weight="600" fill="#0F172A">Consent store</text>
+  <text x="1156" y="654" fill="#64748B">consent_detail</text>
+  <text x="1156" y="674" fill="#64748B">consent_history</text>
+  <line x1="1020" y1="690" x2="1020" y2="712" stroke="#334155" stroke-width="2" marker-end="url(#as)"/>
+    <rect x="910" y="714" width="220" height="42" rx="12" fill="#F1F5F9" stroke="#334155"/>
+  <text x="1020" y="741" text-anchor="middle" fill="#0F172A" font-weight="600">PostgreSQL</text>
+  <rect x="1140" y="714" width="220" height="42" rx="12" fill="#F1F5F9" stroke="#334155"/>
+  <text x="1250" y="741" text-anchor="middle" fill="#0F172A" font-weight="600">Mock identity (OTP / KYC)</text>
+
+  <!-- Arrow 1 -->
+  <line x1="500" y1="190" x2="930" y2="190" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="540" y="178" fill="#F0652A" font-weight="700">1</text>
+  <text x="558" y="178" fill="#0F172A">PAR + PKCE + DPoP</text>
+  <!-- Arrow 3 -->
+  <line x1="930" y1="222" x2="500" y2="222" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="540" y="246" fill="#F0652A" font-weight="700">3</text>
+  <text x="558" y="246" fill="#0F172A">token → access_token +</text>
+  <text x="558" y="266" fill="#0F172A">id_token{ds_hash, sid} +</text>
+  <text x="558" y="286" fill="#0F172A">device_secret (JWE)</text>
+
+  <!-- Arrow 5 -->
+  <path d="M500,545 H825 V325 H930" fill="none" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="540" y="490" fill="#F0652A" font-weight="700">5</text>
+  <text x="558" y="490" fill="#0F172A">token exchange</text>
+  <text x="558" y="510" fill="#0F172A">subject=id_token,</text>
+  <text x="558" y="530" fill="#0F172A">actor=device_secret</text>
+  <!-- Arrow 6 -->
+  <path d="M930,358 H845 V605 H500" fill="none" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="540" y="568" fill="#F0652A" font-weight="700">6</text>
+  <text x="558" y="568" fill="#0F172A">access_token{cnf.jkt=Key A,</text>
+  <text x="558" y="588" fill="#0F172A">act.sub=Wallet}</text>
+  <!-- Arrow 7 -->
+  <path d="M500,665 H865 V442 H930" fill="none" stroke="#F0652A" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="540" y="630" fill="#F0652A" font-weight="700">7</text>
+  <text x="558" y="630" fill="#0F172A">userinfo (DPoP proof by Key A,</text>
+  <text x="558" y="650" fill="#0F172A">signed through the Wallet)</text>
+</svg>
