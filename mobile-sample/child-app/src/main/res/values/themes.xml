@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.MosipChildApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#2E7D32</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#F4A523</item>
+        <item name="android:statusBarColor">#2E7D32</item>
+    </style>
+</resources>

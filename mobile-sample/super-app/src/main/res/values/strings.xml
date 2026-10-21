@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Vendor Wallet</string>
+    <string name="permission_label">Native SSO credentials</string>
+    <string name="permission_description">Lets a same-vendor app reuse this app\'s eSignet sign-in</string>
+    <string name="title">Vendor Wallet</string>
+    <string name="subtitle">Super app · signs in with eSignet and shares the session with sibling apps</string>
+    <string name="sign_in">Sign in with eSignet</string>
+    <string name="sign_out">Sign out</string>
+    <string name="refresh_userinfo">Fetch userinfo</string>
+    <string name="status_signed_out">Not signed in. Tap the button to authenticate with eSignet (OTP flow).</string>
+    <string name="status_waiting">Waiting for eSignet…</string>
+    <string name="status_signed_in">Signed in. A device secret is stored; sibling apps can now sign in silently.</string>
+    <string name="details_title">Native SSO details</string>
+    <string name="chip_signed_out">Signed out</string>
+    <string name="chip_signed_in">Signed in · device secret stored</string>
+    <string name="chip_busy">Working…</string>
+    <string name="section_profile">Your profile (userinfo)</string>
+    <string name="secondary_action">Refresh userinfo</string>
+</resources>

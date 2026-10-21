@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- heart / health -->
+    <path android:fillColor="#FFFFFF" android:pathData="M54,78L30,54a12,12 0 0 1 17,-17l7,7 7,-7a12,12 0 0 1 17,17z"/>
+    <path android:fillColor="#2E7D32" android:pathData="M50,54h8v-8h4v8h8v4h-8v8h-4v-8h-8z"/>
+</vector>
