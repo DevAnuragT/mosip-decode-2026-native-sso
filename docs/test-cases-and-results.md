@@ -76,7 +76,7 @@ Performed on a OnePlus CPH2531 (Android 15) with the apps installed from `mobile
 |---|---|---|
 | Vendor Wallet → Sign in with eSignet | Custom Tab opens the eSignet login for "Vendor Wallet (super app)" | PASS |
 | OTP login, UIN entry | login page reached through `adb reverse` | PASS |
-| hCaptcha test checkbox, OTP `111111`, consent Allow | redirect back to the app, claims shown, binding check "✓" | PASS (captcha ticked by a person) |
+| Turnstile dummy captcha (auto-pass), OTP `111111`, consent Allow | redirect back to the app, claims shown, binding check "✓" | PASS |
 | Vendor Health → Sign in | silent sign-in, "Signed in silently in N ms", claims shown | PASS (215 ms; act.sub = mosip-super-app, cnf.jkt = Key A) |
 | Vendor Health → Sign in with extra claims (phone) | dialog explaining the refusal, re-consent in the browser | PASS (dialog shown; interactive consent opens in the browser) |
 
@@ -86,6 +86,6 @@ Performed on a OnePlus CPH2531 (Android 15) with the apps installed from `mobile
 |---|---|
 | eSignet | `http://localhost:8088` (developer mode, `.env` in `esignet-service/`) |
 | Mock identity | UIN `1774231323`, OTP `111111`, PIN `545411` |
-| Captcha | hCaptcha test site key `10000000-ffff-ffff-ffff-000000000001` |
+| Captcha | Cloudflare Turnstile dummy site key `1x00000000000000000000AA` (always passes; no validator URL configured locally) |
 | Clients | `mosip-super-app`, `mosip-child-app` (relying party `mosip-demo-vendor`), `other-vendor-app` (relying party `another-vendor`) — registered by `mobile-sample/scripts/register_clients.py` |
 | Client keys | RSA-2048, PKCS#8 PEM, generated per app; `kid` = RFC 7638 thumbprint |

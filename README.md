@@ -75,7 +75,7 @@ python3 tests/native_sso_e2e.py        # 26/26 checks
 # 6. Build + install the apps (see mobile-sample/README.md)
 ```
 
-Test identity (seeded by `init.sql`): UIN `1774231323`, OTP `111111`, hCaptcha test key.
+Test identity (seeded by `init.sql`): UIN `1774231323`, OTP `111111`. Captcha: Cloudflare Turnstile dummy site key `1x00000000000000000000AA` (auto-passes locally, see `docs/esignet.env.example`).
 
 ## Unit tests
 
