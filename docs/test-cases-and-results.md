@@ -20,12 +20,12 @@ Runs against a live eSignet (Go) with the mock identity system, playing both app
 | S6 | `id_token.sid` present | present | PASS |
 | S7 | Access token bound to Key A | `cnf.jkt` = thumbprint(Key A) | PASS |
 | S8 | Super app userinfo with DPoP | claims returned (name) | PASS |
-| C1 | Child token exchange (scope `openid email`) | 200, `token_type=DPoP` | PASS |
+| C1 | Child token exchange (scope `openid profile`) | 200, `token_type=DPoP` | PASS |
 | C2 | No device secret on an exchange | absent | PASS |
 | C3 | Same subject as the super app | equal `sub` | PASS |
 | C4 | `act.sub` names the super app | `mosip-super-app` | PASS |
 | C5 | Child token bound to Key A | `cnf.jkt` equal | PASS |
-| C6 | Child userinfo returns the consented claim | `email` | PASS |
+| C6 | Child userinfo returns the consented claim | `name` | PASS |
 | C7 | Device secret reusable for a second exchange | 200 | PASS |
 | N1 | 10.a scope escalation (`phone` never granted) | `invalid_scope` "exceeds" | PASS |
 | N2 | 10.b `device_sso` on exchange | `invalid_scope` | PASS |
@@ -33,7 +33,7 @@ Runs against a live eSignet (Go) with the mock identity system, playing both app
 | N4 | DPoP proof from a different key | `invalid_grant` "thumbprint" | PASS |
 | N5 | Tampered device secret | `invalid_grant` "could not be decrypted" | PASS |
 | N6 | Device secret presented with a wrong subject token type | `invalid_request` | PASS |
-| B1 | Bonus: child asks for `profile` (needs `picture`, unticked at consent) | `interaction_required` "picture" | PASS |
+| B1 | Bonus: child asks for `email`, which was unticked at the super app's consent | `interaction_required` "email" | PASS |
 | P1 | Login without `device_sso` issues no device secret | absent | PASS |
 | P2 | … and no `ds_hash` | absent | PASS |
 
@@ -76,9 +76,9 @@ Performed on a OnePlus CPH2531 (Android 15) with the apps installed from `mobile
 |---|---|---|
 | Vendor Wallet → Sign in with eSignet | Custom Tab opens the eSignet login for "Vendor Wallet (super app)" | PASS |
 | OTP login, UIN entry | login page reached through `adb reverse` | PASS |
-| hCaptcha test checkbox, OTP `111111`, consent Allow | redirect back to the app, claims shown, binding check "✓" | needs a human tap on the captcha; see the demo script |
-| Vendor Health → Sign in | silent sign-in, "Signed in silently in N ms", claims shown | pending the step above |
-| Vendor Health → Sign in with extra claims (phone) | dialog explaining the refusal, re-consent in the browser | pending the step above |
+| hCaptcha test checkbox, OTP `111111`, consent Allow | redirect back to the app, claims shown, binding check "✓" | PASS (captcha ticked by a person) |
+| Vendor Health → Sign in | silent sign-in, "Signed in silently in N ms", claims shown | PASS (215 ms; act.sub = mosip-super-app, cnf.jkt = Key A) |
+| Vendor Health → Sign in with extra claims (phone) | dialog explaining the refusal, re-consent in the browser | PASS (dialog shown; interactive consent opens in the browser) |
 
 ## Test data
 

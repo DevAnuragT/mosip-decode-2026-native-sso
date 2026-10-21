@@ -4,6 +4,7 @@
     <string name="subtitle">Child app · signs in silently through the Vendor Wallet session (OpenID Native SSO)</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_in_more">Sign in with extra claims (phone)</string>
+    <string name="secondary_action">Sign in with extra claims (phone)</string>
     <string name="sign_out">Sign out</string>
     <string name="status_signed_out">Not signed in. If Vendor Wallet is signed in, this takes one tap and no prompts.</string>
     <string name="status_working">Exchanging the Wallet\'s device secret…</string>
@@ -14,5 +15,4 @@
     <string name="chip_signed_in">Signed in via Native SSO</string>
     <string name="chip_busy">Working…</string>
     <string name="section_profile">Your profile (userinfo)</string>
-    <string name="secondary_action">Sign in with extra claims (phone)</string>
 </resources>

@@ -238,6 +238,8 @@ class Esignet:
         }
         if claims:
             form["claims"] = json.dumps(claims)
+        # Always capture consent afresh so the run does not depend on what an earlier login stored.
+        form["prompt"] = "consent"
         _, _, body = request("POST", self.par, form, {"DPoP": dpop.proof("POST", self.par)}, form=True)
         request_uri = json.loads(body)["request_uri"]
         log(f"    PAR ok: {request_uri[:60]}…")
@@ -358,12 +360,12 @@ def main() -> int:
     report.expect("device_sso" in es.meta.get("scopes_supported", []), "device_sso advertised")
 
     print("== 1. super app login with device_sso")
-    # The user approves everything except the optional "picture" claim: the child app may later
-    # reuse name/email silently, but asking for picture needs fresh consent (bonus task).
+    # The user approves everything except the optional "email" claim: the child app may later
+    # reuse name silently, but asking for email needs fresh consent (bonus task).
     tokens = es.super_app_login(super_key, key_a, "openid profile email device_sso", "org.mosip.superapp://callback",
                                 args.individual_id, args.otp,
                                 claims={"userinfo": {"name": {"essential": True}, "email": {"essential": False}}},
-                                decline={"picture"})
+                                decline={"email"})
     id_token, device_secret = tokens.get("id_token"), tokens.get("device_secret")
     report.expect(bool(tokens.get("access_token")), "access token issued", tokens.get("token_type", ""))
     report.expect(bool(id_token), "id_token issued")
@@ -378,7 +380,7 @@ def main() -> int:
     report.expect(bool(info.get("sub")), "super app userinfo", f"name={info.get('name')}")
 
     print("== 2. child app silent sign-in (token exchange)")
-    child = es.exchange(child_key, id_token, device_secret, "openid email", key_a.proof("POST", es.token))
+    child = es.exchange(child_key, id_token, device_secret, "openid profile", key_a.proof("POST", es.token))
     report.expect(bool(child.get("access_token")), "child access token issued", child.get("token_type", ""))
     report.expect(not child.get("device_secret"), "no device_secret on an exchange")
     cac = jwt_payload(child["access_token"])
@@ -386,7 +388,7 @@ def main() -> int:
     report.expect((cac.get("act") or {}).get("sub") == SUPER, "act claim names the super app", json.dumps(cac.get("act")))
     report.expect((cac.get("cnf") or {}).get("jkt") == key_a.thumbprint(), "child token bound to Key A (cnf.jkt)")
     cinfo = es.user_info(child["access_token"], key_a.proof("GET", es.userinfo, child["access_token"]))
-    report.expect(cinfo.get("sub") == info.get("sub"), "child app userinfo", f"email={cinfo.get('email')}")
+    report.expect(cinfo.get("sub") == info.get("sub") and cinfo.get("name") == info.get("name"), "child app userinfo", f"name={cinfo.get('name')}")
     child2 = es.exchange(child_key, id_token, device_secret, "openid", key_a.proof("POST", es.token))
     report.expect(bool(child2.get("access_token")), "device secret is reusable for a second sign-in")
 
@@ -410,9 +412,9 @@ def main() -> int:
     expect_oauth_error(report, "device secret as subject_token type is refused",
                        lambda: es.exchange(child_key, id_token, device_secret, "openid", key_a.proof("POST", es.token), actor_type=TT_ID_TOKEN),
                        "invalid_request")
-    expect_oauth_error(report, "bonus: profile needs picture, which the user never consented to",
-                       lambda: es.exchange(child_key, id_token, device_secret, "openid profile", key_a.proof("POST", es.token)),
-                       "interaction_required", "picture")
+    expect_oauth_error(report, "bonus: email was never consented to the super app",
+                       lambda: es.exchange(child_key, id_token, device_secret, "openid email", key_a.proof("POST", es.token)),
+                       "interaction_required", "email")
 
     print("== 4. a second super-app login without device_sso issues no device secret")
     plain = es.super_app_login(super_key, key_a, "openid profile", "org.mosip.superapp://callback", args.individual_id, args.otp)

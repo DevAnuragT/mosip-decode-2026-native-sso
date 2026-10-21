@@ -34,9 +34,9 @@ class ChildAuthRepository private constructor(private val context: Context) {
 
     companion object {
         /** Default: a subset of what the wallet was granted, so consent is reused. */
-        const val SCOPE_DEFAULT = "openid profile email"
-        /** Bonus demo: asks for a claim the wallet never obtained consent for. */
-        const val SCOPE_EXTRA = "openid profile email phone"
+        const val SCOPE_DEFAULT = "openid profile"
+        /** Bonus demo: asks for a scope the wallet was never granted, so the silent path is refused. */
+        const val SCOPE_EXTRA = "openid profile phone"
 
         @Volatile private var instance: ChildAuthRepository? = null
         fun get(context: Context): ChildAuthRepository =

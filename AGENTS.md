@@ -93,8 +93,10 @@ demos: `delete from esignet.consent_detail; delete from esignet.consent_history;
 
 ## 4. Open items / next steps
 
-1. **Phone walk-through** (human needed for the captcha): Wallet login → Health silent sign-in →
-   Health "extra claims" re-consent. Then record the demo video (`docs/demo-video-script.md`).
+1. **Phone walk-through done (2026-10-21 18:30):** Wallet login (captcha ticked by the user) →
+   Health silent sign-in in 215 ms (act.sub = super app, cnf.jkt = Key A) → "extra claims (phone)"
+   refused with invalid_scope → dialog → eSignet consent flow opens for the Health client. Still to
+   do: record the demo video (`docs/demo-video-script.md`).
 2. Push `feature/ps03-native-sso` of both repos to the forks and open the upstream PRs
    (`docs/pr-thunderid.md`, `docs/pr-esignet.md`). ThunderID PR needs the rebased branch; eSignet PR
    builds only with the companion change (state it in the PR).

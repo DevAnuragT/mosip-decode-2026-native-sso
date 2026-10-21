@@ -49,7 +49,9 @@ CLIENTS = [
         "module": "child-app",
         "relyingPartyId": "mosip-demo-vendor",
         "redirectUris": ["org.mosip.childapp://callback"],
-        "userClaims": ["name", "email", "picture", "phone_number"],
+        # No picture: the default silent sign-in (openid profile) then only needs the essential
+        # "name" claim, while email/phone are the extra claims that trigger re-consent.
+        "userClaims": ["name", "email", "phone_number"],
         "grantTypes": ["authorization_code", "token_exchange"],
         "additionalConfig": {
             "require_pushed_authorization_requests": True,
