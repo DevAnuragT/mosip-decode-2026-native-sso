@@ -1,0 +1,412 @@
+/* eSignet OIDC UI — "modern minimal" theme.
+ *
+ * Mounted over /usr/share/nginx/html/theme/variables.css in the oidc-ui container (no rebuild).
+ * It (1) sets the UI's own CSS variables and (2) overrides the few hard-coded rules of the UI
+ * bundle and the ThunderID sign-in components with higher-specificity selectors. Pair it with the
+ * server theme `theme-modern.yaml` (MOSIP_ESIGNET_THEME_ID=theme-modern) and the Inter font
+ * (DEFAULT_FONT_URL) — see run-ui.sh.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-stack: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --line: #e6e9ef;
+  --surface: #ffffff;
+  --canvas: #f6f7f9;
+  --accent: #f0652a;
+  --accent-ink: #c44916;
+  --accent-tint: #fff3ec;
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px rgba(15, 23, 42, 0.06);
+
+  --primary-color: var(--accent);
+  --secondary-color: var(--muted);
+  --login-card-box-color: var(--line);
+  --login-card-box-hover-color: var(--accent);
+  --login-card-box-focus-color: var(--accent);
+  --login-background: var(--canvas);
+  --language-icon-color: #ffffff;
+  --language-icon-bg-color: var(--ink);
+  --login-background-min-height: calc(100vh - 112px) !important;
+  --brand-only-logo-url: url("/logo.png");
+  --brand-logo-url: url("/images/brand_logo.png");
+  --background-logo-url: none;
+  --footer-brand-logo-url: url("/images/footer_logo.png");
+
+  --primary-button-color: #ffffff;
+  --primary-button-bg-color: var(--accent);
+  --primary-button-border-color: var(--accent);
+  --primary-button-hover-color: #ffffff;
+  --primary-button-hover-bg-color: var(--accent-ink);
+  --primary-button-hover-border-color: var(--accent-ink);
+  --primary-button-disable-color: #94a3b8;
+  --primary-button-disable-bg-color: #f1f5f9;
+  --primary-button-disable-border-color: #f1f5f9;
+  --primary-button-border-radius: var(--radius-control);
+  --secondary-button-color: var(--ink);
+  --secondary-button-bg-color: #ffffff;
+  --secondary-button-border-color: var(--line);
+  --secondary-button-hover-color: var(--ink);
+  --secondary-button-hover-bg-color: #f8fafc;
+  --secondary-button-hover-border-color: #cbd5e1;
+  --secondary-button-disable-color: #94a3b8;
+  --secondary-button-disable-bg-color: #f1f5f9;
+  --secondary-button-disable-border-color: #f1f5f9;
+
+  --loading-indicator-ring-color: var(--accent);
+  --loading-indicator-bg-color: transparent;
+  --loading-indicator-font-color: var(--ink);
+  --qrcode-border-color: var(--line);
+  --info-icon-color: var(--muted);
+  --toggle-button-inactive-bg-color: #ffffff;
+  --toggle-button-inactive-border-color: var(--line);
+  --toggle-button-active-bg-color: #ffffff;
+  --toggle-button-active-border-color: var(--accent);
+  --toggle-button-inactive-ball-color: #cbd5e1;
+  --toggle-button-inactive-ball-border-color: #cbd5e1;
+  --toggle-button-active-ball-color: var(--accent);
+  --toggle-button-active-ball-border-color: var(--accent);
+  --toggle-button-ring-color: var(--accent);
+
+  --header-height: 64px;
+  --footer-height: 48px;
+  --navbar-position: relative;
+  --navbar-zIndex: 1;
+  --navbar-box-shadow: none;
+
+  --signup-banner-background-color: var(--accent-tint);
+  --signup-banner-bottom-radius: var(--radius-control);
+  --signup-banner-padding-top: 16px;
+  --signup-banner-padding-bottom: 16px;
+  --signup-banner-margin-top: 16px;
+  --signup-banner-signup-url-color: var(--accent-ink);
+  --signup-banner-signup-url-color-hover: var(--accent);
+  --signup-banner-signup-url-color-focus: var(--accent);
+  --signup-banner-font: normal normal 500 14px/20px var(--font-stack);
+
+  --multipurpose-login-card-border-radius: var(--radius-card);
+  --multipurpose-login-card-background-color: var(--surface);
+
+  /* no decorative corner artwork */
+  --top-left-bg-logo-display: none;
+  --bottom-right-bg-logo-display: none;
+  --bottom-left-bg-logo-display: none;
+  --top-right-bg-logo-display: none;
+  --top-left-bg-logo-url: none;
+  --bottom-right-bg-logo-url: none;
+  --bottom-left-bg-logo-url: none;
+  --top-left-bg-width: 0;
+  --top-left-bg-height: 0;
+  --top-left-bg-position-top: 0;
+  --top-left-bg-position-left: 0;
+  --bottom-left-bg-width: 0;
+  --bottom-left-bg-height: 0;
+  --bottom-left-bg-position-bottom: 0;
+  --bottom-left-bg-position-left: 0;
+  --top-right-bg-width: 0;
+  --top-right-bg-height: 0;
+  --top-right-bg-position-top: 0;
+  --top-right-bg-position-right: 0;
+  --bottom-right-bg-width: 0;
+  --bottom-right-bg-height: 0;
+  --bottom-right-bg-position-bottom: 0;
+  --bottom-right-bg-position-right: 0;
+
+  --login-client-logo-image-height: 3rem;
+  --login-client-logo-image-width: 3rem;
+  --login-client-logo-image-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --login-alternate-arrow: "\2194";
+  --login-alternate-arrow-size: 1.125rem;
+  --login-text-color: var(--ink);
+  --login-card-separator: linear-gradient(0deg, var(--line) 0%, var(--line) 100%);
+  --login-card-separator-height: 1px;
+  --login-header-text-color: var(--ink);
+  --login-subheader-text-color: var(--muted);
+
+  --footer-text-color: #94a3b8;
+  --footer-text-size: 13px;
+  --language-check-icon-color: var(--accent);
+  --selected-lang-text-color: var(--ink);
+  --forgot-password-color: var(--accent-ink);
+  --forgot-password-font-size: 13px;
+  --forgot-password-width: max-content;
+  --forgot-password-margin-top: 0.5rem;
+  --forgot-password-margin-bottom: 0.5rem;
+  --password-google-reCaptcha-margin-top: 2rem;
+  --password-google-reCaptcha-margin-bottom: 1rem;
+  --back-button-color: var(--ink);
+  --more-signin-options-color: var(--accent-ink);
+  --arrow-down-color: var(--muted);
+
+  --consent-details-header-font: normal normal 600 22px/28px var(--font-stack);
+  --consent-details-header-color: var(--ink);
+  --consent-details-subheader-font: normal normal 600 15px/22px var(--font-stack);
+  --consent-details-subheader-color: var(--ink-2);
+  --consent-details-infoIcon-fill: var(--muted);
+  --consent-details-infoIcon-stroke: var(--muted);
+  --consent-details-available-font: normal normal 500 14px/20px var(--font-stack);
+  --consent-details-available-color: #15803d;
+  --consent-details-unavailable-font: normal normal 500 14px/20px var(--font-stack);
+  --consent-details-unavailable-color: var(--muted);
+  --consent-details-message-color: var(--accent-ink);
+  --consent-details-message-background: var(--accent-tint);
+  --consent-timer-text-color: var(--muted);
+  --consent-banner-background-color: var(--accent-tint);
+  --consent-banner-border-radius: var(--radius-control);
+
+  --otp-pin-input-width: 48px;
+  --otp-pin-input-height: 52px;
+  --otp-pin-input-margin: 0 4px;
+  --otp-pin-input-color: var(--ink);
+  --otp-pin-input-border-bottom: 2px solid var(--accent);
+  --checkbox-color: var(--accent);
+  --wallet-download-text-color: var(--accent-ink);
+  --no-record-banner-background: var(--accent-tint);
+  --no-record-banner-border-radius: var(--radius-control);
+  --no-record-banner-font: normal normal 400 13px/18px var(--font-stack);
+  --no-record-banner-color: var(--accent-ink);
+  --no-record-banner-padding: 1em 1.25em;
+
+  --selected_login_id_border_color: var(--accent);
+  --login_id_label_color: var(--ink-2);
+  --selected_login_id_color: var(--accent-ink);
+  --login_id_hover_border_color: var(--accent);
+  --login_id_hover_color: var(--accent-ink);
+  --selected_login_id_focus_color: var(--accent);
+  --selected_login_id_focus_outline_color: var(--accent);
+  --qr_code_title_color: var(--muted);
+  --resend_otp_button_color: var(--accent-ink);
+  --caps-lock-text-color: #0369a1;
+  --border-button-text-color: var(--ink);
+  --border-button-border-color: var(--line);
+}
+
+/* ---------- global ---------- */
+html body,
+html body *:not(svg):not(path) {
+  font-family: var(--font-stack) !important;
+  -webkit-font-smoothing: antialiased;
+}
+html body {
+  background: var(--canvas);
+  color: var(--ink);
+}
+html body .section-background {
+  background-image: radial-gradient(1200px 500px at 50% -200px, #fff7f2 0%, var(--canvas) 60%);
+}
+
+/* ---------- header / footer ---------- */
+html body .navbar-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+html body .navbar-header .brand-logo {
+  height: 34px;
+}
+html body .footer-container {
+  background: transparent;
+  border: 0;
+}
+
+/* ---------- the sign-in card ---------- */
+html body .multipurpose-login-card,
+html body .thunderid-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-card);
+}
+/* the SDK gives the card a fixed 420px width; keep it inside small viewports */
+html body .thunderid-signin.thunderid-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 440px;
+  box-sizing: border-box;
+  padding: 28px 24px 24px;
+  margin: 0 auto;
+}
+html body .section-background .container {
+  padding-inline: 12px;
+}
+html body .thunderid-divider {
+  height: 1px !important;
+  margin: 20px 0 !important;
+  width: 100% !important;
+  margin-inline-start: 0 !important;
+  background: var(--line) !important;
+}
+
+/* headings and body copy inside the card */
+html body .thunderid-signin .thunderid-typography__h3,
+html body .thunderid-signin .thunderid-typography__h4,
+html body .thunderid-signin .thunderid-typography__h5 {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+html body .thunderid-signin .thunderid-typography__h3 {
+  font-size: 24px;
+}
+html body .thunderid-signin .thunderid-typography {
+  color: var(--ink-2);
+}
+/* "<app> is requesting authentication for login": quieter than the title */
+html body .thunderid-signin .thunderid-typography__subtitle2,
+html body .thunderid-signin .thunderid-typography__body1 {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: var(--muted) !important;
+  font-weight: 400 !important;
+}
+html body .thunderid-signin .thunderid-typography__subtitle2 b,
+html body .thunderid-signin .thunderid-typography__subtitle2 strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+html body .thunderid-signin label,
+html body .thunderid-signin .thunderid-input-label {
+  color: var(--ink-2);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* ---------- buttons ---------- */
+html body .thunderid-button {
+  border-radius: var(--radius-control) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0;
+  min-height: 48px !important;
+  font-size: 15px !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+html body .thunderid-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+html body .thunderid-button.thunderid-button__solid.thunderid-button__primary {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 16px rgba(240, 101, 42, 0.22);
+}
+html body .thunderid-button.thunderid-button__solid.thunderid-button__primary:hover:not(:disabled) {
+  background: var(--accent-ink) !important;
+  border-color: var(--accent-ink) !important;
+  opacity: 1 !important;
+}
+/* login-mode and login-ID option buttons (outline/secondary) */
+html body .thunderid-button.thunderid-button__outline {
+  background: #f8fafc !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  color: var(--ink) !important;
+  padding: 12px 16px !important;
+  min-height: 56px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  justify-content: flex-start !important;
+}
+html body .thunderid-button.thunderid-button__outline:hover:not(:disabled) {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: var(--ink) !important;
+}
+/* the selected login-ID option carries the primary border from the theme: tint it */
+html body .thunderid-button.thunderid-button__outline[style*="border-color"],
+html body .thunderid-button.thunderid-button__outline.login-id-button--active,
+html body .login-id-button--active {
+  background: var(--accent-tint) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-ink) !important;
+}
+html body .thunderid-button .thunderid-button__start-icon > img {
+  width: 22px !important;
+  height: auto !important;
+  opacity: 0.9;
+}
+
+/* ---------- inputs ---------- */
+html body .thunderid-text-field__input,
+html body .thunderid-signin input[type="text"],
+html body .thunderid-signin input[type="password"],
+html body .thunderid-signin input[type="email"],
+html body .thunderid-signin input[type="tel"],
+html body .thunderid-signin select {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-control) !important;
+  min-height: 48px !important;
+  padding-inline: 14px !important;
+  font-size: 15px !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+  box-shadow: none;
+}
+html body .thunderid-text-field__input:focus,
+html body .thunderid-signin input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(240, 101, 42, 0.12) !important;
+}
+html body .thunderid-signin input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+/* OTP boxes */
+html body .thunderid-signin input[maxlength="1"] {
+  width: 46px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding-inline: 0 !important;
+  text-align: center;
+  font-size: 20px !important;
+  font-weight: 600;
+  border: 1.5px solid var(--line) !important;
+  border-radius: var(--radius-control) !important;
+}
+
+/* app logo glow -> soft */
+html body .app-shadow {
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+  border-radius: 14px;
+}
+
+/* captcha + misc */
+html body .captcha-renderer {
+  margin-block: 12px;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+}
+@media (max-width: 420px) {
+  /* the hCaptcha iframe is a fixed 303px wide; keep it inside the card on narrow phones */
+  html body .captcha-renderer {
+    transform: scale(0.92);
+    transform-origin: center;
+  }
+}
+html body .back-button-color {
+  color: var(--ink);
+}
+html body [data-radix-popper-content-wrapper] * {
+  font-family: var(--font-stack) !important;
+}
+
+/* error pages */
+html body .error-page-header {
+  color: var(--ink);
+  font: normal normal 600 22px/28px var(--font-stack);
+}
+html body .error-page-detail {
+  color: var(--muted);
+  font: normal normal 400 14px/20px var(--font-stack);
+}
+
+@media (max-width: 767px) {
+  html body .multipurpose-login-card,
+  html body .thunderid-signin.thunderid-card {
+    border-radius: 18px !important;
+  }
+}

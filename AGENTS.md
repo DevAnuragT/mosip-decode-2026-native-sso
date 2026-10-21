@@ -71,6 +71,15 @@ compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSign
   CPH2531 (`FUHIYLMZUO8LAMY9`, Android 15). Needs `adb reverse tcp:8088 tcp:8088` and
   `adb reverse tcp:3000 tcp:3000` (re-run after every reconnect).
 
+### Login UI theme (`ui-theme/`)
+- `theme-modern.yaml` (server theme, selected by `MOSIP_ESIGNET_THEME_ID=theme-modern`, copied into
+  `esignet-service/data/themes/` — git-excluded there) + `variables.css` mounted into the oidc-ui
+  container by `run-ui.sh` (Inter font via `DEFAULT_FONT_URL`). Real SDK class names are BEM:
+  `thunderid-button__outline`, `thunderid-button__solid.thunderid-button__primary`,
+  `thunderid-text-field__input`, `thunderid-typography__h3/subtitle2`; the card is a fixed 420 px
+  `thunderid-signin` (overridden to 100%). Browser caches `variables.css`: clear cache after edits
+  (DevTools over `adb forward tcp:9222 localabstract:chrome_devtools_remote` works with Brave).
+
 ### Verification assets
 - `tests/native_sso_e2e.py`: 26/26 against the local stack (drives the login flow API with
   `test-captcha-token`). Results in `tests/results/`.
