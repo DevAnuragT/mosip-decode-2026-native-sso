@@ -96,8 +96,9 @@ docker run -d --name esignet-ui --user root --add-host esignet:host-gateway -p 3
 python3 mobile-sample/scripts/register_clients.py
 python3 tests/native_sso_e2e.py
 ```
-Mock identity: UIN `1774231323`, OTP `111111`. hCaptcha test key is configured; the login UI shows a
-"I am human" checkbox that a person must tick (never automate captchas). To reset consent between
+Mock identity: UIN `1774231323`, OTP `111111`. Captcha: Cloudflare Turnstile dummy key
+(`cloudflare-turnstile` / `1x00000000000000000000AA`) auto-passes with no tap; the server has no
+validator URL so any non-empty token is accepted locally. Never automate a real captcha. To reset consent between
 demos: `delete from esignet.consent_detail; delete from esignet.consent_history;` in the
 `mosip_esignet` database (`docker compose exec database psql -U postgres -d mosip_esignet`).
 

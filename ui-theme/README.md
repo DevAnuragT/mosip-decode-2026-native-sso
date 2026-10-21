@@ -12,7 +12,7 @@ error pages) without rebuilding the OIDC UI image:
 
 Notes
 
-- hCaptcha's test site key always paints a red "for testing only" notice inside its iframe; a real (free) hCaptcha site key removes it. Nothing outside the iframe can style it.
+- Captcha: the local stack uses Cloudflare Turnstile's public dummy key (`MOSIP_ESIGNET_CAPTCHA_SITE_PROVIDER=cloudflare-turnstile`, `MOSIP_ESIGNET_CAPTCHA_SITE_KEY=1x00000000000000000000AA` in `esignet-service/.env`): the widget auto-passes, fits the card and needs no tap. Every public test key (hCaptcha or Turnstile) still paints a thin "for testing only" line inside its iframe; a real free site key removes it. The local eSignet has no captcha validator URL configured, so it accepts any non-empty token (dev only).
 - Browsers cache `variables.css`; after editing it, hard-reload (or clear the site cache) to see changes.
 - Fonts load from Google Fonts; offline demos fall back to the system sans-serif.
 - Nothing here changes the upstream repositories: the default theme stays untouched and the theme file
