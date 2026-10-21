@@ -72,8 +72,9 @@ compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSign
   `adb reverse tcp:3000 tcp:3000` (re-run after every reconnect).
 
 ### Login UI theme (`ui-theme/`)
-- `theme-modern.yaml` (server theme, selected by `MOSIP_ESIGNET_THEME_ID=theme-modern`, copied into
-  `esignet-service/data/themes/` — git-excluded there) + `variables.css` mounted into the oidc-ui
+- `esignet-data/` overlay of the eSignet data dir (adds `theme-modern.yaml`, captcha `size: compact`),
+  selected with `DATA_DIR="…/ui-theme/esignet-data"` (quoted: the path has a space) and
+  `MOSIP_ESIGNET_THEME_ID=theme-modern` in `.env`; `variables.css` mounted into the oidc-ui
   container by `run-ui.sh` (Inter font via `DEFAULT_FONT_URL`). Real SDK class names are BEM:
   `thunderid-button__outline`, `thunderid-button__solid.thunderid-button__primary`,
   `thunderid-text-field__input`, `thunderid-typography__h3/subtitle2`; the card is a fixed 420 px
