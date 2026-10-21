@@ -377,14 +377,25 @@ html body .app-shadow {
 /* captcha + misc */
 html body .captcha-renderer {
   margin-block: 12px;
-  overflow: hidden;
-  border-radius: var(--radius-control);
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+}
+/* the widget's 303px iframe is a touch wider than the inputs on a 360px phone: scale it to match */
+@media (max-width: 400px) {
+  html body .captcha-renderer > * {
+    transform: scale(0.94);
+    transform-origin: center top;
+  }
 }
 @media (max-width: 420px) {
-  /* the hCaptcha iframe is a fixed 303px wide; keep it inside the card on narrow phones */
-  html body .captcha-renderer {
-    transform: scale(0.92);
-    transform-origin: center;
+  /* the hCaptcha iframe is a fixed 303px wide: on narrow phones shrink the card padding so the
+     widget sits flush with the 304px-wide inputs instead of poking out of the card */
+  html body .thunderid-signin.thunderid-card {
+    padding: 24px 16px 20px;
+  }
+  html body .section-background .container {
+    padding-inline: 8px;
   }
 }
 html body .back-button-color {
