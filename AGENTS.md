@@ -1,87 +1,115 @@
-# MOSIP Decode 2026 - Agent Execution & Development Guide
+# MOSIP Decode 2026 — Agent Execution & Development Guide
 
-**Problem Statement 03:** `eSignet | Enable Native SSO in eSignet Go for Mobile Apps`  
-**Tracking File:** `AGENTS.md` (Internal engineering log & progress tracker)
-
----
-
-## 1. Current State & Completed Implementation
-
-### A. ThunderID Backend Core (`repos/thunderid/backend`)
-- **Constants & Models (`constants/`, `model/`, `tokenservice/`)**:
-  - `TokenTypeIdentifierDeviceSecret = "urn:openid:params:token-type:device-secret"`.
-  - `ScopeDeviceSSO = "device_sso"`.
-  - `DeviceSecret` string added to `TokenResponse` & `TokenResponseDTO`.
-  - `DSHash` binding claim added to `IDTokenBuildContext` and `SubjectTokenClaims`.
-- **Provider Interface (`pkg/thunderidengine/providers/`)**:
-  - `DeviceSecretProvider` interface with `GenerateDeviceSecret` and `ValidateDeviceSecret`.
-  - Added `WithDeviceSecretProvider` option in `engine.go`.
-- **Grant Handlers (`internal/oauth/oauth2/granthandlers/`)**:
-  - `authorization_code.go`: Issues `device_secret` when `scope=device_sso` is requested; computes `ds_hash = BASE64URL(SHA-256(device_secret))` and embeds it in `id_token`.
-  - `token_exchange.go`: Handles `actor_token_type=urn:openid:params:token-type:device-secret`. Validates signature, verifies `ds_hash`, matches `cnf.jkt` with DPoP thumbprint (`Key A`), enforces subject match.
-  - **Task 10.a Scope Downscoping**: Checks that child app scopes $\subseteq$ super app original scopes (excess scopes fail with `invalid_scope`).
-  - **Task 10.b Scope Exclusion**: Rejects any token exchange request containing `device_sso` (`invalid_scope`).
-- **Tests**: Full test coverage in `token_exchange_test.go` and `authorization_code_test.go`. All tests pass.
-
-### B. MOSIP eSignet Go Service (`repos/esignet-go/esignet-service`)
-- **`internal/engine/device_secret_provider.go`**:
-  - Signs Device Secret compact JWS with eSignet's KeyManager/Signature service (`signature.Service.JWSSign`).
-  - Validates signature (`signature.Service.JWSVerify`), checks expiration, and enforces Relying Party / Vendor family isolation (`childClient.RpID == superClient.RpID` or `allowed_child_clients`).
-- **`cmd/esignet/main.go`**: Wired via `thunderidengine.WithDeviceSecretProvider(engine.NewDeviceSecretProvider(appCfg, clientSvc, sigSvc))`.
-- **`internal/engine/device_secret_provider_test.go`**: Unit tests covering generation, verification, vendor isolation, expired tokens, and tampered signatures. All pass.
-
-### C. Deliverables Ready in Workspace
-1. **Postman Collection**: `postman/mosip_esignet_native_sso.postman_collection.json` (8 automated test requests).
-2. **Mobile Architecture Sample**: `mobile-sample/` (Super App with KeyStoreManager Key A + signature ContentProvider; Child App with NativeSSOClient).
+**Problem statement 03:** `eSignet | Enable Native SSO in eSignet Go for Mobile Apps`
+**Tracking file:** `AGENTS.md` (engineering log, state of play, how to work in this workspace)
 
 ---
 
-## 2. Verification Commands
+## 0. Hackathon facts (from Unstop + the organiser PDFs, 2026-10-21)
+
+- **Final submission deadline: 26 Oct 2026, 23:59 IST.** Evaluation 2–6 Nov 2026. Last submission counts.
+- Submit by email to `decode@mosip.io`: team name, problem statement, links (code repo + a cloud folder
+  with the other artefacts). Everything must be accessible.
+- Mandatory artefacts: source repo with history, working prototype, pitch deck, 2–5 min demo video,
+  README with install steps, API documentation, college IDs. Scored extras: architecture diagram,
+  mockups, test data, test cases + results.
+- Scoring: functionality 40 %, deliverable quality 40 % (code quality, docs, scalability,
+  reusability, maintainability), UX 10 %, presentation 10 %.
+- PS03 deliverables: native apps, Postman collection, API + design docs, PPT, demo video.
+
+## 1. Workspace layout and git state
+
+| Path | Git | Branch of record | Notes |
+|---|---|---|---|
+| `/Users/anurag/MOSIP hack` (this folder) | own repo (`master`) | — | Submission repo: `mobile-sample/`, `tests/`, `postman/`, `docs/`, `README.md`. `repos/` and `scratch/` are git-ignored. |
+| `repos/thunderid` | fork checkout of `thunder-id/thunderid` | `feature/ps03-native-sso` (rebased on `origin/main`, 3 commits) | **PR branch.** `feature/ps03-native-sso-pre-rebase` holds the same work on the older base that eSignet `develop-go` pins; keep both in sync (cherry-pick) — eSignet is built against the pre-rebase branch. |
+| `repos/esignet-go` | checkout of `mosip/esignet` (`origin`), fork remote `fork` = DevAnuragT/esignet | `feature/ps03-native-sso` (rebased on `origin/develop-go`, 5 commits) | **PR branch.** Go code lives on `develop-go`, never rebase onto `master` (Java). `go.mod` replaces thunderid with `../../thunderid/backend`. `fix/2555-...` carries the separate community bug fix. |
+
+Version skew to remember: eSignet `develop-go` pins ThunderID at an Aug-2026 commit (Go 1.26);
+ThunderID `main` needs Go 1.27.2 and changed the authn provider interface, so eSignet does **not**
+compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSignet's `go.mod`.
+
+## 2. What is implemented (all PS03 tasks + bonus)
+
+### ThunderID (`repos/thunderid/backend`)
+- `providers`: `DeviceSecretProvider`, `DeviceSSOConsentProvider`, `DeviceSecretParams/Result/Claims`
+  (incl. `SessionID`), `DerivedConsentRequest/Result`; `WithDeviceSecretProvider`.
+- `constants`: `ScopeDeviceSSO`, `TokenTypeIdentifierDeviceSecret`, `ErrorInteractionRequired`.
+- `granthandlers/authorization_code.go`: `device_sso` ⇒ client must be enabled + provider present;
+  mints device secret (sid = SSO session id or authorization id), `ds_hash` + `sid` on the ID token.
+- `granthandlers/token_exchange.go`: device-secret actor: id_token subject required, client enabled,
+  provider validation, `ds_hash`/`sid`/`sub` checks, DPoP key = `cnf.jkt`, device-secret scope is
+  the grant authority, `device_sso` refused, derived consent (⇒ `interaction_required`), attribute
+  cache from the device secret's claims, `act` = super app.
+- `oauth2/utils`: `device_sso` is a protocol scope (not downscoped to a resource server).
+- Tests: `granthandlers` (both suites), `oauth2/utils`. `go test ./internal/oauth/... ./pkg/thunderidengine/...` green.
+
+### eSignet (`repos/esignet-go/esignet-service`)
+- `internal/engine/device_secret_provider.go`: signed-then-encrypted device secrets
+  (`OIDC_SERVICE`/`DEVICE_SECRET_ENC`, provisioned in `main.go`), allowed-scope checks on both sides,
+  issuer/expiry, vendor family (RP id or `allowed_child_clients`), KYC JWS unpacking,
+  `ResolveDerivedConsent` (consent record + history row for the child).
+- `clientmgmt`: `token_exchange` grant accepted; `actor_provider.go` maps registered grant types;
+  `deployment.yaml` allows the exchange grant + `device_sso`; config
+  `MOSIP_ESIGNET_DEVICE_SECRET_VALIDITY_SECONDS`.
+- Docs: `docs/native-sso.md`, OpenAPI, configuration, RP guide. Tests: `go test ./...` green.
+
+### Mobile (`mobile-sample/`, Gradle 8.11.1 / AGP 8.7.3 / Kotlin 2.0.21 / JDK 17)
+- `nativesso-sdk`: `Codec`, `KeystoreDpopSigner` (Key A, EC P-256), `ClientKey` (PS256
+  private_key_jwt, `aud` = issuer, `kid` = RFC 7638 thumbprint), `EsignetClient` (PAR/PKCE/DPoP,
+  code redemption, token exchange, userinfo), `SessionStore` (EncryptedSharedPreferences),
+  `NativeSsoContract` (ContentProvider IPC + `RemoteDpopSigner`).
+- `super-app` (Vendor Wallet, `org.mosip.superapp`) and `child-app` (Vendor Health,
+  `org.mosip.childapp`), both signed with `keystore/mosip-demo.jks`. Edge-to-edge safe-area handled
+  with `fitsSystemWindows`; readable key/value rows.
+- `scripts/register_clients.py` generates client keys into `res/raw/` and registers
+  `mosip-super-app`, `mosip-child-app`, `other-vendor-app`.
+- Build: `JAVA_HOME=/opt/homebrew/opt/openjdk@17 ./gradlew assembleDebug`. Device: OnePlus
+  CPH2531 (`FUHIYLMZUO8LAMY9`, Android 15). Needs `adb reverse tcp:8088 tcp:8088` and
+  `adb reverse tcp:3000 tcp:3000` (re-run after every reconnect).
+
+### Verification assets
+- `tests/native_sso_e2e.py`: 26/26 against the local stack (drives the login flow API with
+  `test-captcha-token`). Results in `tests/results/`.
+- `postman/build_collection.py` → collection + env (Postman desktop app; newman lacks WebCrypto/top-level await).
+
+## 3. Local stack (how it is running now)
 
 ```bash
-# ThunderID backend tests
-cd "repos/thunderid/backend"
-go test -v -run "TestTokenExchangeGrantHandlerSuite/TestHandleGrant_DeviceSecret|TestTokenExchangeGrantHandlerSuite/TestValidateGrant_Device" ./internal/oauth/oauth2/granthandlers/...
-
-# eSignet Go tests
-cd "../../repos/esignet-go/esignet-service"
-go test -v -run "TestDeviceSecretProviderTestSuite" ./internal/engine/...
-
-# Build check
-go build ./cmd/esignet
+cd repos/esignet-go/docker-compose && docker compose -f dependent-docker-compose.yaml up -d   # Postgres :5455, mock-identity :8082
+cd ../esignet-service && ./make.sh run          # :8088, .env prepared (mock authn, inmemory cache, PKCS12 ./keystore.pfx, LOG_LEVEL=debug)
+docker run -d --name esignet-ui --user root --add-host esignet:host-gateway -p 3000:3000 \
+  -v "$PWD/../docker-compose/nginx.conf:/etc/nginx/nginx.conf" -e DEFAULT_LANG=en mosipdev/oidc-ui:develop-go
+python3 mobile-sample/scripts/register_clients.py
+python3 tests/native_sso_e2e.py
 ```
+Mock identity: UIN `1774231323`, OTP `111111`. hCaptcha test key is configured; the login UI shows a
+"I am human" checkbox that a person must tick (never automate captchas). To reset consent between
+demos: `delete from esignet.consent_detail; delete from esignet.consent_history;` in the
+`mosip_esignet` database (`docker compose exec database psql -U postgres -d mosip_esignet`).
 
----
+## 4. Open items / next steps
 
-## 3. MOSIP Open-Source Contribution Strategy (Shortlisting Acceleration)
+1. **Phone walk-through** (human needed for the captcha): Wallet login → Health silent sign-in →
+   Health "extra claims" re-consent. Then record the demo video (`docs/demo-video-script.md`).
+2. Push `feature/ps03-native-sso` of both repos to the forks and open the upstream PRs
+   (`docs/pr-thunderid.md`, `docs/pr-esignet.md`). ThunderID PR needs the rebased branch; eSignet PR
+   builds only with the companion change (state it in the PR).
+3. Pitch deck in `docs/` (generated from this workspace) — keep the PS task table and the security
+   properties slide in sync with `README.md`.
+4. Follow-ups worth mentioning, not required: device-secret revocation on super-app sign-out,
+   single-use `jti` tracking, a consent-screen line item for `device_sso`.
 
-MOSIP Decode 2026 organizers evaluate GitHub contributions to the MOSIP ecosystem to shortlist teams into Stage 2. To ensure maximum scoring and visibility:
+## 5. Community bug-fix PRs (shortlisting)
 
-### A. High-Impact Community Bug Fix PRs on `mosip/esignet`
-1. **Issue #2590 (`keycloak-init never creates the get_oidc_client scope, so GET /client-mgmt/client/{client_id} is unusable`)**:
-   - *Status*: Claimed by Anurag Thakur (`DevAnuragT`) via [Issue Comment #5645008375](https://github.com/mosip/esignet/issues/2590#issuecomment-5645008375).
-   - *Root Cause*: `deploy/keycloak/keycloak-init-values.yaml` omits `get_oidc_client` from `client_scopes` and `mosip-pms-client.assign_client_scopes`, causing HTTP 403.
-   - *Fix*: Declare `get_oidc_client` scope and assign it to `mosip-pms-client` in `keycloak-init-values.yaml`.
-2. **Issue #2555 (`eSignet-Thunder: Bug — An unrecognised consent purposeName silently drops every approved claim`)**:
-   - *Status*: Fix and unit tests completed locally on branch `fix/2555-unrecognised-consent-purposename`. Ready for PR.
-   - *Root Cause*: In `internal/engine/consent_provider.go`, `RecordConsent()` ignores unrecognized purpose prefixes, silently dropping approved claims and returning a false success.
-   - *Fix*: Validate `purposeName` prefixes (`attributes:` or `permissions:`). If unrecognized, return `clientError("consent_purpose_not_recognized", fmt.Errorf("The consent decisions purposeName is not recognised"))`.
-3. **Issue #2556 (`eSignet-Thunder: Bug — Declining a mandatory claim is reported as a system error`)**:
-   - *Root Cause*: `clientError("essential_consent_denied", nil)` returns `serviceError.Code = "essential_consent_denied"`. ThunderID's `consent_executor.go` expects `Code == "AUTH-CES-1006"`. Because it didn't match, it fell into the generic client error branch and returned `ErrConsentRecordFailed` (*"An error occurred while recording the user consent"*).
-   - *Fix*: Ensure the error code aligns with ThunderID's `ErrorEssentialConsentDenied` contract, and properly populate localized descriptions.
-4. **Issue #2570 (`oidc-ui: UIN/VID login field numeric inputmode`)**:
-   - *Root Cause*: `input#username_input` renders with `type="text"` and lacks `inputmode="numeric"`, opening an alphabetical keyboard on mobile devices for numeric IDs.
-   - *Fix*: In `oidc-ui`, set `inputmode="numeric"` and `pattern="[0-9]*"` for the UIN/VID option.
+- Issue #2590 (`keycloak-init` scope) — claimed by Anurag Thakur (`DevAnuragT`).
+- Issue #2555 (unrecognised consent purposeName) — fix + tests on `fix/2555-unrecognised-consent-purposename` (rebased on `develop-go`), ready for PR.
+- Issue #2556 (declining a mandatory claim reported as system error) — root cause known, fix pending.
+- Issue #2570 (oidc-ui numeric inputmode) — fix pending.
 
-### B. Upstream Feature Pull Requests (Problem Statement 03)
-1. **PR to `thunder-id/thunderid`**:
-   - RFC 8693 Token Exchange handler with `actor_token_type=device-secret`, DPoP Key A hardware binding, Task 10.a scope downscoping, and Task 10.b `device_sso` exclusion.
-2. **PR to `mosip/esignet` (`develop-go`)**:
-   - `DeviceSecretProvider` JWS compact token generation, `ds_hash` injection into `id_token`, verification, and vendor isolation.
+## 6. Conventions
 
-### C. Contribution Requirements Checklist
-- [x] Commits signed off with DCO (`git commit -s` with `Signed-off-by: Anurag Thakur <anuragthakur2102@gmail.com>`)
-- [x] Targeted to upstream `develop-go` branch for `mosip/esignet`
-- [x] Full unit test coverage and clean builds
-- [x] Apache 2.0 / MPL 2.0 license headers preserved
-
+- Commits: `git commit -s` (DCO, `Signed-off-by: Anurag Thakur <anuragthakur2102@gmail.com>`),
+  Co-Authored-By trailer for assistant-authored commits, MPL-2.0 headers in eSignet Go files.
+- Keep the ThunderID branches in sync; run the e2e script after any backend change; rebuild +
+  reinstall both APKs after SDK changes.
