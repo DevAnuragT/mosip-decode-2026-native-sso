@@ -42,6 +42,9 @@ compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSign
   the grant authority, `device_sso` refused, derived consent (⇒ `interaction_required`), attribute
   cache from the device secret's claims, `act` = super app.
 - `oauth2/utils`: `device_sso` is a protocol scope (not downscoped to a resource server).
+- `tokenservice`: `ValidateNativeSSOSubjectToken` accepts an expired self-issued ID token on a
+  device-secret exchange (ID tokens live ~2 min, device secrets 30 days); nbf, signature, typ and
+  revocation are still enforced. Found on the phone: "The subject_token has expired".
 - Tests: `granthandlers` (both suites), `oauth2/utils`. `go test ./internal/oauth/... ./pkg/thunderidengine/...` green.
 
 ### eSignet (`repos/esignet-go/esignet-service`)
