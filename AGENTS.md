@@ -135,6 +135,7 @@ demos: `delete from esignet.consent_detail; delete from esignet.consent_history;
 ## 6. Conventions
 
 - Commits: `git commit -s` (DCO, `Signed-off-by: Anurag Thakur <anuragthakur2102@gmail.com>`),
-  Co-Authored-By trailer for assistant-authored commits, MPL-2.0 headers in eSignet Go files.
+  **no Co-Authored-By or "generated with" attribution anywhere** (commits, PR texts, docs),
+  MPL-2.0 headers in eSignet Go files.
 - Keep the ThunderID branches in sync; run the e2e script after any backend change; rebuild +
   reinstall both APKs after SDK changes.

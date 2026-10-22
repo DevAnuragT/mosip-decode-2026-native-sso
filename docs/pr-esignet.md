@@ -46,5 +46,3 @@ python3 tests/native_sso_e2e.py   # 26 checks: issuance, binding, exchange, nega
 Requires the ThunderID companion PR (`DeviceSecretProvider`, `DeviceSSOConsentProvider`, token
 exchange with device-secret actor tokens). `go.mod` keeps the `replace` directive the branch builds
 against.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
