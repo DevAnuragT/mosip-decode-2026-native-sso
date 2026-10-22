@@ -1,0 +1,181 @@
+{
+  "esignet": "http://localhost:8088",
+  "ran_at": "2026-10-22T17:10:18Z",
+  "results": [
+    {
+      "status": "PASS",
+      "name": "token exchange advertised",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "device_sso advertised",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "native_sso_supported advertised (\u00a75)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "access token issued",
+      "detail": "DPoP"
+    },
+    {
+      "status": "PASS",
+      "name": "id_token issued",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "device_secret issued",
+      "detail": "2266 chars"
+    },
+    {
+      "status": "PASS",
+      "name": "device_secret is an encrypted JWE (5 segments)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "id_token ds_hash = SHA-256(device_secret)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "id_token carries sid",
+      "detail": "01a16497-93bc-7e7d-a835-f53fd805b409"
+    },
+    {
+      "status": "PASS",
+      "name": "access token bound to Key A (cnf.jkt)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "super app userinfo",
+      "detail": "name=Siddharth K Mansour"
+    },
+    {
+      "status": "PASS",
+      "name": "child access token issued",
+      "detail": "DPoP"
+    },
+    {
+      "status": "PASS",
+      "name": "no device_secret on an exchange",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "same subject as the super app",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "act claim names the super app",
+      "detail": "{\"sub\": \"mosip-super-app\"}"
+    },
+    {
+      "status": "PASS",
+      "name": "child token bound to Key A (cnf.jkt)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "child app userinfo",
+      "detail": "name=Siddharth K Mansour"
+    },
+    {
+      "status": "PASS",
+      "name": "device secret is reusable for a second sign-in",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "10.a scope escalation (phone was never granted)",
+      "detail": "invalid_scope: Requested scope 'phone' exceeds scopes originally granted in subject token"
+    },
+    {
+      "status": "PASS",
+      "name": "10.b device_sso rejected on token exchange",
+      "detail": "invalid_scope: device_sso scope is valid only on the token endpoint with authorization_code grant"
+    },
+    {
+      "status": "PASS",
+      "name": "vendor isolation: other vendor cannot redeem the secret",
+      "detail": "invalid_grant: Client is not authorized to exchange this device secret (vendor mismatch)"
+    },
+    {
+      "status": "PASS",
+      "name": "DPoP proof from a different key is refused",
+      "detail": "invalid_grant: DPoP key thumbprint does not match cnf.jkt in device secret"
+    },
+    {
+      "status": "PASS",
+      "name": "tampered device secret is refused",
+      "detail": "invalid_grant: Device secret could not be decrypted"
+    },
+    {
+      "status": "PASS",
+      "name": "device secret as subject_token type is refused",
+      "detail": "invalid_request: Invalid actor_token"
+    },
+    {
+      "status": "PASS",
+      "name": "bonus: email was never consented to the super app",
+      "detail": "interaction_required: The consent granted to the originating application does not cover this request; claims not consented: email"
+    },
+    {
+      "status": "PASS",
+      "name": "scope without openid is refused on an exchange",
+      "detail": "invalid_scope: A Native SSO token exchange that requests scopes must include the openid scope"
+    },
+    {
+      "status": "PASS",
+      "name": "\u00a74.1 audience missing is refused",
+      "detail": "invalid_request: The audience parameter is required for a Native SSO token exchange"
+    },
+    {
+      "status": "PASS",
+      "name": "\u00a74.1 audience other than the issuer is invalid_target",
+      "detail": "invalid_target: The audience of a Native SSO token exchange must be the issuer URL"
+    },
+    {
+      "status": "PASS",
+      "name": "no device_secret without the scope",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "no ds_hash without the scope",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "\u00a73.4 device_sso without openid is refused",
+      "detail": "invalid_scope: The device_sso scope requires the openid scope"
+    },
+    {
+      "status": "PASS",
+      "name": "second login issues an id_token and a device_secret",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "exchange without scope issues a token",
+      "detail": "openid profile"
+    },
+    {
+      "status": "PASS",
+      "name": "10.b exchange without scope does not pass on device_sso",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "id_token of one login with the device secret of another is refused",
+      "detail": "invalid_grant: ds_hash in subject_token does not match actor_token"
+    }
+  ]
+}

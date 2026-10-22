@@ -11,7 +11,12 @@ The script plays both apps of one vendor from the laptop, with no browser involv
      ``act`` names the super app, then calls userinfo with it.
   3. Negative cases: scope escalation, ``device_sso`` on an exchange, a different vendor, a wrong
      DPoP key, a tampered device secret, a missing ``sid`` binding, and the bonus re-consent case
-     (``interaction_required`` when the child asks for a claim the user never consented to).
+     (``interaction_required`` when the child asks for a claim the user never consented to); the
+     exchange's ``audience`` must be the issuer (missing: invalid_request, other: invalid_target)
+     and a ``scope`` without ``openid`` is refused.
+  4. A login without ``device_sso`` issues no device secret; ``device_sso`` without ``openid`` is
+     refused; an exchange without ``scope`` never hands ``device_sso`` to the child; and the ID
+     token of one login cannot be paired with the device secret of another (ds_hash/sid binding).
 
 Only the standard library and the ``openssl`` CLI are used. Keys come from
 ``mobile-sample/scripts/register_clients.py`` (run it first, it registers the clients too).
@@ -152,6 +157,10 @@ def der_to_jose(der: bytes) -> bytes:
     slen = der[i + 1]
     s = int.from_bytes(der[i + 2:i + 2 + slen], "big")
     return r.to_bytes(32, "big") + s.to_bytes(32, "big")
+
+
+# Sentinel: send the issuer as the exchange's audience (Native SSO 1.0 §4.1).
+ISSUER = object()
 
 
 # ----------------------------------------------------------------------------- HTTP helpers
@@ -311,16 +320,23 @@ class Esignet:
         return {"approved": True, "purposes": purposes}
 
     # --- child app: token exchange ----------------------------------------------------------
-    def exchange(self, key: RsaClientKey, id_token: str, device_secret: str, scope: str, dpop_proof: str,
-                 actor_type: str = TT_DEVICE_SECRET) -> dict:
+    def exchange(self, key: RsaClientKey, id_token: str, device_secret: str, scope: str | None, dpop_proof: str,
+                 actor_type: str = TT_DEVICE_SECRET, audience=ISSUER) -> dict:
+        """Native SSO token exchange. ``scope=None`` omits the parameter; ``audience`` defaults to the
+        issuer (REQUIRED by Native SSO 1.0 §4.1), ``None`` omits it."""
         form = {
             "grant_type": GRANT_TOKEN_EXCHANGE, "client_id": key.client_id,
             "subject_token": id_token, "subject_token_type": TT_ID_TOKEN,
             "actor_token": device_secret, "actor_token_type": actor_type,
-            "scope": scope,
             "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             "client_assertion": key.assertion(self.meta["issuer"]),
         }
+        if scope is not None:
+            form["scope"] = scope
+        if audience is ISSUER:
+            audience = self.meta["issuer"]
+        if audience is not None:
+            form["audience"] = audience
         _, _, body = request("POST", self.token, form, {"DPoP": dpop_proof}, form=True)
         return json.loads(body)
 
@@ -358,6 +374,7 @@ def main() -> int:
     print("== discovery")
     report.expect(GRANT_TOKEN_EXCHANGE in es.meta.get("grant_types_supported", []), "token exchange advertised")
     report.expect("device_sso" in es.meta.get("scopes_supported", []), "device_sso advertised")
+    report.expect(es.meta.get("native_sso_supported") is True, "native_sso_supported advertised (§5)")
 
     print("== 1. super app login with device_sso")
     # The user approves everything except the optional "email" claim: the child app may later
@@ -415,11 +432,43 @@ def main() -> int:
     expect_oauth_error(report, "bonus: email was never consented to the super app",
                        lambda: es.exchange(child_key, id_token, device_secret, "openid email", key_a.proof("POST", es.token)),
                        "interaction_required", "email")
+    expect_oauth_error(report, "scope without openid is refused on an exchange",
+                       lambda: es.exchange(child_key, id_token, device_secret, "profile", key_a.proof("POST", es.token)),
+                       "invalid_scope", "openid")
+    expect_oauth_error(report, "§4.1 audience missing is refused",
+                       lambda: es.exchange(child_key, id_token, device_secret, "openid profile", key_a.proof("POST", es.token),
+                                           audience=None),
+                       "invalid_request", "audience")
+    expect_oauth_error(report, "§4.1 audience other than the issuer is invalid_target",
+                       lambda: es.exchange(child_key, id_token, device_secret, "openid profile", key_a.proof("POST", es.token),
+                                           audience="https://rp.example.com"),
+                       "invalid_target", "issuer")
 
     print("== 4. a second super-app login without device_sso issues no device secret")
     plain = es.super_app_login(super_key, key_a, "openid profile", "org.mosip.superapp://callback", args.individual_id, args.otp)
     report.expect(not plain.get("device_secret"), "no device_secret without the scope")
     report.expect("ds_hash" not in jwt_payload(plain["id_token"]), "no ds_hash without the scope")
+    expect_oauth_error(report, "§3.4 device_sso without openid is refused",
+                       lambda: es.super_app_login(super_key, key_a, "profile device_sso", "org.mosip.superapp://callback",
+                                                  args.individual_id, args.otp, log=lambda *_: None),
+                       "invalid_scope", "openid")
+
+    print("== 5. a second device_sso login: inherited scopes and cross-login binding")
+    second = es.super_app_login(super_key, key_a, "openid profile device_sso", "org.mosip.superapp://callback",
+                                args.individual_id, args.otp)
+    id_token2, device_secret2 = second.get("id_token"), second.get("device_secret")
+    report.expect(bool(id_token2) and bool(device_secret2), "second login issues an id_token and a device_secret")
+    try:
+        inherited = es.exchange(child_key, id_token2, device_secret2, None, key_a.proof("POST", es.token))
+        granted = set((inherited.get("scope") or "").split()) | set((jwt_payload(inherited["access_token"]).get("scope") or "").split())
+        report.expect(bool(inherited.get("access_token")), "exchange without scope issues a token", " ".join(sorted(granted)))
+        report.expect("device_sso" not in granted and "openid" in granted, "10.b exchange without scope does not pass on device_sso")
+    except HttpError as err:
+        report.fail("exchange without scope issues a token", str(err))
+        report.fail("10.b exchange without scope does not pass on device_sso", "no token")
+    expect_oauth_error(report, "id_token of one login with the device secret of another is refused",
+                       lambda: es.exchange(child_key, id_token, device_secret2, "openid", key_a.proof("POST", es.token)),
+                       "invalid_grant", "does not match")
 
     os.makedirs(os.path.dirname(args.report), exist_ok=True)
     with open(args.report, "w") as fh:
