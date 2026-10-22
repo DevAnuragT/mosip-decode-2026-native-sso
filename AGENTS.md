@@ -114,9 +114,10 @@ demos: `delete from esignet.consent_detail; delete from esignet.consent_history;
 1. **Phone walk-through done (2026-10-21 18:30):** Wallet login (captcha ticked by the user) →
    Health silent sign-in in 215 ms (act.sub = super app, cnf.jkt = Key A) → "extra claims (phone)"
    refused with invalid_scope → dialog → eSignet consent flow opens for the Health client.
-   **Demo video (2026-10-22):** title cards rendered with Ghostscript (ffmpeg here has no drawtext),
-   `tools/demo_driver.js` drives the phone steps over adb + DevTools, `scrcpy --record` captures the
-   segments; the phone dropped off USB before the recording, so `docs/demo-video.mp4` is still open.
+   **Demo video done (2026-10-22):** `docs/demo-video.mp4` (3:12, 1080x1920, silent). Pipeline in
+   `tools/video/` (Ghostscript title cards, scrcpy `--time-limit` segments driven by
+   `tools/demo_driver.js`, ffmpeg concat). Consent "Allow" must be a real tap (custom-scheme
+   redirects ignore synthetic clicks). A voice-over can be added later; the cards carry the narration.
 2. Push `feature/ps03-native-sso` of both repos to the forks and open the upstream PRs
    (`docs/pr-thunderid.md`, `docs/pr-esignet.md`). ThunderID PR needs the rebased branch; eSignet PR
    builds only with the companion change (state it in the PR).

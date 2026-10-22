@@ -26,7 +26,7 @@ presentation 10 % (medium-complexity PS).
 | B1* | Source code | done | this repo, `repos/thunderid` and `repos/esignet-go` feature branches |
 | B2* | Working prototype / demo | done | local stack + two Android apps installed and verified on device |
 | B3* | Pitch presentation / slide deck | done (needs a visual pass in PowerPoint) | `docs/pitch-deck.pptx` |
-| B4* | Video demo, 2–5 min, problem → solution → key characteristics | **recording** (title cards + assembly ready; phone segments need the USB phone) | `docs/demo-video.mp4` (script: `docs/demo-video-script.md`, driver: `tools/demo_driver.js`) |
+| B4* | Video demo, 2–5 min, problem → solution → key characteristics | done (3:12, silent, title cards + live phone capture) | `docs/demo-video.mp4` (pipeline: `tools/video/`, driver: `tools/demo_driver.js`) |
 | B5 | Design mockups, wireframes, user-flow diagrams | done | `docs/mockups-and-flows.md` + `docs/images/` |
 | B6 | Architecture diagram | done | `docs/images/architecture.svg`, deck slide 4, design doc §2 |
 | B7 | Test data | done | `docs/test-cases-and-results.md` §Test data |
@@ -57,7 +57,7 @@ presentation 10 % (medium-complexity PS).
 | D2 | Updated Postman collection | done | `postman/` (collection + env generator) |
 | D3 | API documentation + design document (MOSIP design + RFC behaviour) | done | `docs/api-documentation.md`, `docs/design-document.md` |
 | D4 | PPT | done | `docs/pitch-deck.pptx` |
-| D5 | Demo video end to end | **recording** | `docs/demo-video.mp4` |
+| D5 | Demo video end to end | done | `docs/demo-video.mp4` |
 
 ## D. Actions that need the account owner
 

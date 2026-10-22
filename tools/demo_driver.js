@@ -21,12 +21,18 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const adb = (args) => execSync(`adb -s ${SERIAL} ${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
 const sh = (cmd) => execSync(cmd, { encoding: "utf8" });
 
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /** Taps the centre of the first on-screen element whose text matches exactly. */
-async function tapText(text, tries = 10) {
+async function tapText(text, tries = 10) { return tapNode(`text="${escapeRe(text)}"`, tries, text); }
+/** Taps the first on-screen element with the given resource id (survives label changes). */
+async function tapId(id, tries = 10) { return tapNode(`resource-id="${escapeRe(id)}"`, tries, id); }
+
+async function tapNode(attr, tries, label) {
   for (let i = 0; i < tries; i++) {
     adb("shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 || true");
     const xml = adb("shell cat /sdcard/ui.xml");
-    const re = new RegExp(`text="${text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"`);
+    const re = new RegExp(`${attr}[^>]*bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"`);
     const m = xml.match(re);
     if (m) {
       const x = Math.round((+m[1] + +m[3]) / 2), y = Math.round((+m[2] + +m[4]) / 2);
@@ -35,7 +41,7 @@ async function tapText(text, tries = 10) {
     }
     await sleep(800);
   }
-  throw new Error(`element not found: ${text}`);
+  throw new Error(`element not found: ${label}`);
 }
 
 function scroll(down = true) {
@@ -105,11 +111,12 @@ async function walletLogin() {
   adb("shell am force-stop com.brave.browser"); adb("shell am force-stop org.mosip.superapp");
   adb("shell am start -n org.mosip.superapp/.MainActivity >/dev/null");
   await sleep(2500);
-  // Start from a signed-out Wallet: the sign-out button sits below the details card.
-  scroll(true); await sleep(800);
-  await tapText("Sign out", 2).catch(() => {});
-  await sleep(800); scroll(false); await sleep(800);
-  await tapText("Sign in with eSignet");
+  // Start from a signed-out Wallet: the sign-out button sits at the very bottom of the page.
+  for (let i = 0; i < 3; i++) { scroll(true); await sleep(600); }
+  await tapId("org.mosip.superapp:id/signOut", 2).catch(() => {});
+  await sleep(800);
+  for (let i = 0; i < 3; i++) { scroll(false); await sleep(600); }
+  await tapId("org.mosip.superapp:id/signIn");
   await sleep(6000);
   await webClick("/^Login with OTP$/");
   await sleep(2500);
@@ -123,7 +130,10 @@ async function walletLogin() {
   await webClick("/^(Verify|Submit)$/");
   await sleep(5000);
   console.log("buttons on consent page:", await webButtons().catch(() => "n/a"));
-  await webClick("/^(Allow|Agree|Continue)$/", 20).catch((e) => console.log("no consent button:", e.message));
+  await sleep(2500);
+  // The consent redirect targets a custom scheme, which the browser only follows after a real user
+  // gesture: tap "Allow" through the accessibility tree instead of a synthetic DOM click.
+  await tapText("Allow", 15).catch(async (e) => { console.log("accessibility tap failed, DOM click:", e.message); await webClick("/^Allow$/", 10); });
   await sleep(6000);
 }
 
@@ -145,8 +155,10 @@ async function healthShow() {
 }
 
 async function healthReconsent() {
-  await tapText("Sign out").catch(() => {});
-  await sleep(1500);
+  for (let i = 0; i < 3; i++) { scroll(true); await sleep(600); }
+  await tapId("org.mosip.childapp:id/signOut", 3).catch(() => {});
+  await sleep(800);
+  for (let i = 0; i < 3; i++) { scroll(false); await sleep(600); }
   await tapText("Sign in with extra claims (phone)");
   await sleep(4000);
   await tapText("Continue");
