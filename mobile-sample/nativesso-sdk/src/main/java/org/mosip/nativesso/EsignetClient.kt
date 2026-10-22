@@ -110,7 +110,8 @@ class EsignetClient(
     /**
      * Silent sign-in (OpenID Connect Native SSO for Mobile Apps 1.0 §5): exchanges the super app's
      * ID token and device secret for this app's own access token. [dpopProof] must be signed by
-     * Key A for `POST {token_endpoint}`; the super app produces it over IPC.
+     * Key A for `POST {token_endpoint}`; the super app produces it over IPC. [scope] must include
+     * `openid`; the `audience` parameter is the issuer URL (Native SSO 1.0 §4.1).
      */
     fun exchangeDeviceSecret(idToken: String, deviceSecret: String, scope: String, dpopProof: String): TokenSet {
         val d = discover()
@@ -123,6 +124,7 @@ class EsignetClient(
             .add("actor_token", deviceSecret)
             .add("actor_token_type", TOKEN_TYPE_DEVICE_SECRET)
             .add("scope", scope)
+            .add("audience", d.issuer)
             .add("client_assertion_type", CLIENT_ASSERTION_TYPE)
             .add("client_assertion", clientKey.clientAssertion(clientId, d.issuer))
             .build()
