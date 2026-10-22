@@ -1,0 +1,104 @@
+# One-command local stack for the Native SSO demo:
+#   ./scripts/fetch-backends.sh                      # once: clones the two backend branches into repos/
+#   docker compose -f deploy/docker-compose.yml up -d --build
+# Then: python3 mobile-sample/scripts/register_clients.py && python3 tests/native_sso_e2e.py
+# Ports (override with env vars): eSignet 8088, login UI 3000, mock identity 8082, PostgreSQL 5455.
+name: mosip-native-sso
+
+services:
+  database:
+    image: postgres:bookworm
+    ports:
+      - "${DB_PORT:-5455}:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ../repos/esignet-go/docker-compose/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mock-identity-system:
+    image: mosipdev/mock-identity-system:release-0.14.x
+    user: root
+    ports:
+      - "${MOCK_PORT:-8082}:8082"
+    environment:
+      container_user: mosip
+      active_profile_env: default,local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/mosip_mockidentitysystem?currentSchema=mockidentitysystem
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      MOSIP_ESIGNET_HOST: localhost:${ESIGNET_PORT:-8088}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  esignet:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.esignet
+    image: mosip-native-sso/esignet:local
+    ports:
+      - "${ESIGNET_PORT:-8088}:8088"
+    environment:
+      LOG_LEVEL: info
+      PORT: 8088
+      MOSIP_ESIGNET_HOST: ${ESIGNET_HOST:-http://localhost:8088}
+      MOSIP_ESIGNET_OIDC_UI_SCHEME: http
+      MOSIP_ESIGNET_OIDC_UI_HOSTNAME: localhost
+      MOSIP_ESIGNET_OIDC_UI_PORT: ${UI_PORT:-3000}
+      MOSIP_ESIGNET_OIDC_UI_LOGIN_PATH: /signin
+      MOSIP_ESIGNET_OIDC_UI_ERROR_PATH: /error
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: mosip_esignet
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DB_DBUSER_PASSWORD: postgres
+      MOSIP_ESIGNET_CACHE_TYPE: inmemory
+      KEYMANAGER_DB_SCHEMA: esignet
+      KEYMANAGER_KEYSTORE_TYPE: PKCS12
+      KEYMANAGER_PKCS12_FILE_PATH: /home/mosip/keys/keystore.pfx   # auto-provisioned on first start
+      KEYMANAGER_PKCS12_PASSWORD: localtest
+      KEYMANAGER_PKCS12_ALLOW_INSECURE_SOFTWARE_KEYSTORE: "true"
+      MOSIP_ESIGNET_AUTHN_PROVIDER: mock
+      MOSIP_ESIGNET_MOCK_DOMAIN_URL: http://mock-identity-system:8082
+      MOSIP_ESIGNET_DEVICE_SECRET_VALIDITY_SECONDS: 2592000
+      # Cloudflare Turnstile dummy site key: always passes, no validator URL is configured.
+      MOSIP_ESIGNET_CAPTCHA_SITE_PROVIDER: cloudflare-turnstile
+      MOSIP_ESIGNET_CAPTCHA_SITE_KEY: 1x00000000000000000000AA
+      MOSIP_ESIGNET_THEME_ID: theme-modern
+      DATA_DIR: /home/mosip/data
+    volumes:
+      - ../ui-theme/esignet-data:/home/mosip/data:ro
+      - esignet-keys:/home/mosip/keys
+    depends_on:
+      database:
+        condition: service_healthy
+      mock-identity-system:
+        condition: service_started
+
+  esignet-ui:
+    image: mosipdev/oidc-ui:develop-go
+    user: root
+    ports:
+      - "${UI_PORT:-3000}:3000"
+    environment:
+      container_user: mosip
+      DEFAULT_LANG: en
+      DEFAULT_TITLE: eSignet
+      DEFAULT_FONT_URL: https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap
+      DEFAULT_WELLKNOWN: "%5B%7B%22name%22%3A%22OpenID%20Configuration%22%2C%22value%22%3A%22%2F.well-known%2Fopenid-configuration%22%7D%5D"
+    volumes:
+      - ../repos/esignet-go/docker-compose/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../ui-theme/variables.css:/usr/share/nginx/html/theme/variables.css:ro
+    depends_on:
+      esignet:
+        condition: service_healthy
+
+volumes:
+  esignet-keys:

@@ -167,6 +167,7 @@ def exchange_fields(scope, client_id="{{child_client_id}}", actor="{{device_secr
         ("subject_token_type", "urn:ietf:params:oauth:token-type:id_token"),
         ("actor_token", actor),
         ("actor_token_type", actor_type),
+        ("audience", "{{audience}}"),
         ("scope", scope),
         ("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"),
         ("client_assertion", "{{child_client_assertion}}"),
@@ -201,6 +202,10 @@ def main():
             p["value"] = "{{super_scope}}"
         if p["key"] == "client_id":
             p["value"] = "{{client_id}}"
+    # Always show the consent screen, so the collection behaves the same whether or not a consent
+    # record from an earlier run exists (the e2e test does the same).
+    if not any(p["key"] == "prompt" for p in par["request"]["body"]["urlencoded"]):
+        par["request"]["body"]["urlencoded"].append({"key": "prompt", "value": "consent", "type": "text"})
     authorize = get("Initiate Authorization")
     authorize["name"] = "1.2 Super app: authorize (redirects to the login UI)"
     steps = [
@@ -215,17 +220,17 @@ def main():
         item["name"] = name
         flow_items.append(item)
     consent = get("Flow execute — consent")
-    consent["name"] = "1.7 Login flow: consent (everything except picture)"
+    consent["name"] = "1.7 Login flow: consent (everything except email)"
     consent["request"]["body"]["raw"] = json.dumps({
         "executionId": "{{execution_id}}", "challengeToken": "{{challenge_token}}", "action": "{{action_ref}}",
         "inputs": {"consent_decisions": "{{consent_decisions}}"},
     }, indent=2)
     consent["event"] = [script("prerequest", [
-        "// Approve every prompted claim except the optional `picture`, so the child app's later",
-        "// request for `profile` (which releases picture) demonstrates interaction_required.",
+        "// Approve every prompted claim except the optional `email`, so the child app's later",
+        "// request for `openid email` (3.6) demonstrates interaction_required.",
         "const prompt = JSON.parse(pm.environment.get('consent_prompt') || '[]');",
         "const decisions = { approved: true, purposes: prompt.map(p => ({ purposeName: p.purposeName, approved: true,",
-        "  elements: [...(p.essential || []), ...(p.optional || [])].map(e => ({ name: e.name, approved: e.name !== 'picture' })) })) };",
+        "  elements: [...(p.essential || []), ...(p.optional || [])].map(e => ({ name: e.name, approved: e.name !== 'email' })) })) };",
         "pm.environment.set('consent_decisions', JSON.stringify(decisions));",
     ]), script("test", [
         "pm.test('consent 200', () => pm.response.to.have.status(200));",
@@ -274,7 +279,7 @@ def main():
 
     # --- 2. child app ----------------------------------------------------------------------
     exchange = form_request(
-        "2.1 Child app: token exchange (silent sign-in)", "{{baseUrl}}/oauth2/token", exchange_fields("openid email"),
+        "2.1 Child app: token exchange (silent sign-in)", "{{baseUrl}}/oauth2/token", exchange_fields("openid profile"),
         prerequest=exchange_prerequest("child_client_private_key", "child_client_id"),
         tests=[
             "pm.test('exchange 200', () => pm.response.to.have.status(200));",
@@ -331,9 +336,9 @@ def main():
                                 "const ds = pm.environment.get('device_secret'); pm.environment.set('tampered_device_secret', ds.slice(0, -2) + 'xx');"],
                             tests=expect_error("invalid_grant", "decrypt"))
     neg.append(tampered)
-    neg.append(form_request("3.6 Bonus: profile needs picture, never consented → interaction_required", "{{baseUrl}}/oauth2/token",
-                            exchange_fields("openid profile"), prerequest=exchange_prerequest("child_client_private_key", "child_client_id"),
-                            tests=expect_error("interaction_required", "picture")))
+    neg.append(form_request("3.6 Bonus: email was never consented to the super app → interaction_required", "{{baseUrl}}/oauth2/token",
+                            exchange_fields("openid email"), prerequest=exchange_prerequest("child_client_private_key", "child_client_id"),
+                            tests=expect_error("interaction_required", "email")))
     neg_folder = {"name": "3. Security and consent checks", "item": neg}
 
     # --- 0. discovery ------------------------------------------------------------------------

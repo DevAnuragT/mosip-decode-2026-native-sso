@@ -22,12 +22,13 @@ Base URL in the local stack: `http://localhost:8088` (eSignet). Examples abbrevi
 
 ## 1. Discovery
 
-`GET /.well-known/openid-configuration` (unchanged endpoint, two additions):
+`GET /.well-known/openid-configuration` (unchanged endpoint, three additions):
 
 | Field | Addition |
 |---|---|
 | `grant_types_supported` | contains `urn:ietf:params:oauth:grant-type:token-exchange` |
 | `scopes_supported` | contains `device_sso` |
+| `native_sso_supported` | `true` (Native SSO §5) |
 
 ## 2. Client registration
 
@@ -167,6 +168,7 @@ grant_type=urn:ietf:params:oauth:grant-type:token-exchange
 &subject_token_type=urn:ietf:params:oauth:token-type:id_token
 &actor_token=<device_secret>
 &actor_token_type=urn:openid:params:token-type:device-secret
+&audience=<issuer URL>
 &scope=openid profile
 &client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
 &client_assertion=<PS256 private_key_jwt, aud = issuer>
@@ -176,13 +178,14 @@ grant_type=urn:ietf:params:oauth:grant-type:token-exchange
 |---|---|
 | `subject_token_type` | must be `urn:ietf:params:oauth:token-type:id_token` |
 | `actor_token_type` | `urn:openid:params:token-type:device-secret` selects the Native SSO path |
-| `scope` | must be a subset of the scope on the device secret; `device_sso` is rejected |
+| `audience` | required, must equal the issuer URL (Native SSO §4.1); `invalid_target` otherwise |
+| `scope` | optional; must include `openid` and be a subset of the scope on the device secret; `device_sso` is rejected, and it is never inherited when `scope` is omitted |
 | `DPoP` header | proof key must equal the device secret's `cnf.jkt` (Key A) |
 
 Success: an access token bound to Key A whose `act.sub` is the super app's client id. No `id_token`, never a `device_secret`.
 
 ```json
-{"access_token": "eyJ...", "token_type": "DPoP", "expires_in": 120, "scope": "openid profile"}
+{"access_token": "eyJ...", "issued_token_type": "urn:ietf:params:oauth:token-type:access_token", "token_type": "DPoP", "expires_in": 120, "scope": "openid profile"}
 ```
 
 Access token claims of interest: `sub` (same user as the super app), `cnf.jkt` (Key A), `act.sub` (`mosip-super-app`).
@@ -205,7 +208,7 @@ Standard OAuth error body: `{"error": "...", "error_description": "..."}`.
 Example:
 
 ```json
-{"error":"interaction_required","error_description":"The consent granted to the originating application does not cover this request; claims not consented: picture"}
+{"error":"interaction_required","error_description":"The consent granted to the originating application does not cover this request; claims not consented: email"}
 ```
 
 ## 7. Userinfo

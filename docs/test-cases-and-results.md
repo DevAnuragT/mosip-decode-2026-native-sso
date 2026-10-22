@@ -32,7 +32,7 @@ Runs against a live eSignet (Go) with the mock identity system, playing both app
 | N3 | Other vendor redeems the secret | `invalid_grant` "vendor mismatch" | PASS |
 | N4 | DPoP proof from a different key | `invalid_grant` "thumbprint" | PASS |
 | N5 | Tampered device secret | `invalid_grant` "could not be decrypted" | PASS |
-| N6 | Device secret presented with a wrong subject token type | `invalid_request` | PASS |
+| N6 | Device secret presented with a wrong actor token type | `invalid_request` | PASS |
 | B1 | Bonus: child asks for `email`, which was unticked at the super app's consent | `interaction_required` "email" | PASS |
 | P1 | Login without `device_sso` issues no device secret | absent | PASS |
 | P2 | … and no `ds_hash` | absent | PASS |
@@ -77,7 +77,7 @@ Performed on a OnePlus CPH2531 (Android 15) with the apps installed from `mobile
 | Vendor Wallet → Sign in with eSignet | Custom Tab opens the eSignet login for "Vendor Wallet (super app)" | PASS |
 | OTP login, UIN entry | login page reached through `adb reverse` | PASS |
 | Turnstile dummy captcha (auto-pass), OTP `111111`, consent Allow | redirect back to the app, claims shown, binding check "✓" | PASS |
-| Vendor Health → Sign in | silent sign-in, "Signed in silently in N ms", claims shown | PASS (215 ms; act.sub = mosip-super-app, cnf.jkt = Key A) |
+| Vendor Health → Sign in | silent sign-in, "Signed in silently in N ms", claims shown | PASS (185–215 ms across runs; act.sub = mosip-super-app, cnf.jkt = Key A) |
 | Vendor Health → Sign in with extra claims (phone) | dialog explaining the refusal, re-consent in the browser | PASS (dialog shown; interactive consent opens in the browser) |
 
 ## Test data

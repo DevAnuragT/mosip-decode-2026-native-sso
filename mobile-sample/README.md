@@ -61,8 +61,8 @@ with `-PesignetBaseUrl=https://host:port`.
 
 Demo script:
 
-1. Open **Vendor Wallet** → *Sign in with eSignet* → OTP login (UIN `1774231323`, tick the hCaptcha
-   test box, OTP `111111`) → review consent → *Allow*. The Wallet shows your claims and the Native
+1. Open **Vendor Wallet** → *Sign in with eSignet* → OTP login (UIN `1774231323`, the Turnstile
+   test captcha passes by itself, OTP `111111`) → review consent → *Allow*. The Wallet shows your claims and the Native
    SSO details: `sid`, `ds_hash`, the SHA-256 of the stored device secret, and the binding check.
 2. Open **Vendor Health** → *Sign in*. No browser, no OTP, no consent: the status chip shows
    "Signed in silently in N ms", the profile shows the consented claims, and the details show

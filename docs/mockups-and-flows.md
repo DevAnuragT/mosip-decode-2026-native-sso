@@ -29,7 +29,7 @@ were taken on the phone in a Custom Tab.
 | | | |
 |---|---|---|
 | ![Silent sign-in](images/health-signed-in-silently.png) | ![Details](images/health-sso-details.png) | ![Re-consent](images/health-reconsent-dialog.png) |
-| **Silent sign-in.** No browser, OTP or consent; the chip reports the time taken ("Signed in silently in N ms", 215 ms in the recorded walk-through) and the profile shows the consented claims. | **Native SSO details.** Token type and scope (`DPoP`, `openid profile`), `act.sub = mosip-super-app`, `cnf.jkt` equal to the Wallet's Key A, and "no device secret received on exchange". | **Re-consent dialog.** When the child asks for `phone`, which the Wallet was never granted, eSignet refuses the silent path (`invalid_scope`; `interaction_required` when a granted claim was unticked) and the app explains why before opening the browser. |
+| **Silent sign-in.** No browser, OTP or consent; the chip reports the time taken ("Signed in silently in N ms", 185–215 ms across the recorded runs) and the profile shows the consented claims. | **Native SSO details.** Token type and scope (`DPoP`, `openid profile`), `act.sub = mosip-super-app`, `cnf.jkt` equal to the Wallet's Key A, and "no device secret received on exchange". | **Re-consent dialog.** When the child asks for `phone`, which the Wallet was never granted, eSignet refuses the silent path (`invalid_scope`; `interaction_required` when a granted claim was unticked) and the app explains why before opening the browser. |
 
 ## 4. User flows
 
@@ -72,7 +72,7 @@ flowchart TD
 ## 5. UX rationale
 
 - **One tap for the second app.** Opening Vendor Health and tapping *Sign in* is the whole interaction; the silent
-  path took 215 ms on the test phone, with no browser, OTP or consent screen.
+  path took 185–215 ms on the test phone, with no browser, OTP or consent screen.
 - **Visible bindings build trust.** Both apps show the key thumbprint, `sid`, `ds_hash`, `act.sub` and `cnf.jkt` in readable
   rows, so a user or reviewer can verify that the child's token is bound to the Wallet's key.
 - **A refusal explains itself.** The re-consent dialog names the scope or claims that need approval and offers

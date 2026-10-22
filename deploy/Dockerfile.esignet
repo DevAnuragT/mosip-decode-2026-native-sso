@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+# Builds eSignet (Go) with the Native SSO changes against the companion ThunderID branch.
+# Build context: the submission repository root (the .dockerignore there keeps only repos/*).
+# eSignet's go.mod has `replace github.com/thunder-id/thunderid => ../../thunderid/backend`, so the
+# two checkouts are laid out in the image exactly as in the workspace.
+FROM golang:1.26-bookworm AS build
+WORKDIR /src
+COPY repos/thunderid/backend /src/thunderid/backend
+COPY repos/esignet-go/esignet-service /src/esignet-go/esignet-service
+WORKDIR /src/esignet-go/esignet-service
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+# CGO_ENABLED=0: static binary with the PKCS12 keystore backend (no HSM client needed locally).
+RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/esignet ./cmd/esignet
+
+FROM debian:bookworm-slim
+RUN apt-get -y update && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -u 1001 -m mosip && mkdir -p /home/mosip/keys && chown mosip /home/mosip/keys
+USER mosip
+WORKDIR /home/mosip
+COPY --from=build --chown=mosip /out/esignet /home/mosip/esignet
+# Default data dir (deployment.yaml, flows, layouts, themes); docker-compose mounts the themed overlay.
+COPY --from=build --chown=mosip /src/esignet-go/esignet-service/data /home/mosip/data
+ENV DATA_DIR=/home/mosip/data PORT=8088
+EXPOSE 8088
+HEALTHCHECK --interval=5s --timeout=3s --retries=30 CMD curl -fs http://localhost:8088/.well-known/openid-configuration >/dev/null || exit 1
+ENTRYPOINT ["/home/mosip/esignet"]

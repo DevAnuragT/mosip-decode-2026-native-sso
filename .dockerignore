@@ -1,0 +1,8 @@
+# Only the two backend checkouts reach the Docker build context (see deploy/Dockerfile.esignet).
+*
+!repos/thunderid/backend
+!repos/esignet-go/esignet-service
+repos/thunderid/backend/.git
+repos/esignet-go/esignet-service/.env
+repos/esignet-go/esignet-service/keystore.pfx
+repos/esignet-go/esignet-service/*.exe

@@ -2,7 +2,10 @@
 repos/
 scratch/
 .DS_Store
-tests/results/
+__pycache__/
+*.pyc
+# Organiser PDFs are not redistributed
+*.pdf
 mobile-sample/.gradle/
 mobile-sample/build/
 mobile-sample/*/build/

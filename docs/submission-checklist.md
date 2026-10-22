@@ -11,7 +11,7 @@ presentation 10 % (medium-complexity PS).
 
 | # | Requirement | Status | Where |
 |---|---|---|---|
-| A1 | Source code on GitHub/GitLab/Bitbucket, well organised and commented, with everything needed to run | **push pending** | this repo (`master`) + the two feature branches in the forks; see §D |
+| A1 | Source code on GitHub/GitLab/Bitbucket, well organised and commented, with everything needed to run | **push pending** | this repo (`master`) + the two feature branches in the forks (`scripts/fetch-backends.sh` pulls them; `deploy/` builds the stack); see §D |
 | A2 | Other mandatory artefacts in a cloud folder (e.g. Google Drive): deck, video, docs, college IDs | **to assemble** | `docs/` has every file; the folder must be created and shared with "anyone with the link" |
 | A3 | Email to `decode@mosip.io` with Team Name, Problem Statement, URLs | **draft ready** | `docs/submission-email.md` |
 | A4 | All links accessible with the necessary permissions | **check before sending** | repo public (or MOSIP granted access), Drive link set to viewer |
@@ -30,8 +30,8 @@ presentation 10 % (medium-complexity PS).
 | B5 | Design mockups, wireframes, user-flow diagrams | done | `docs/mockups-and-flows.md` + `docs/images/` |
 | B6 | Architecture diagram | done | `docs/images/architecture.svg`, deck slide 4, design doc §2 |
 | B7 | Test data | done | `docs/test-cases-and-results.md` §Test data |
-| B8 | Test cases and results | done | `docs/test-cases-and-results.md`, `tests/results/native_sso_e2e.json` |
-| B9* | Usage and installation instructions | done | `README.md` (stack, clients, e2e, apps), `mobile-sample/README.md`, `ui-theme/README.md`, `docs/esignet.env.example` |
+| B8 | Test cases and results | done | `docs/test-cases-and-results.md`, `tests/results/native_sso_e2e.json` (tracked) |
+| B9* | Usage and installation instructions | done | `README.md` "Verify it in ten minutes" (compose stack), `mobile-sample/README.md`, `ui-theme/README.md`, `docs/esignet.env.example` |
 | B10* | API documentation | done | `docs/api-documentation.md` (standalone), `repos/esignet-go/docs/native-sso.md` §6, OpenAPI `/oauth2/token` |
 | B11* | Git repository with version-control history | done locally | commits per feature in all three repos; push pending (§D) |
 | B12* | College/university credentials | **user** | Drive folder |
@@ -61,9 +61,12 @@ presentation 10 % (medium-complexity PS).
 
 ## D. Actions that need the account owner
 
-1. Push the submission repo to GitHub (public), e.g. `gh repo create mosip-decode-2026-native-sso --public --source . --push`.
-2. Push `feature/ps03-native-sso` of `repos/thunderid` and `repos/esignet-go` to the forks and open the PRs
-   with `docs/pr-thunderid.md` and `docs/pr-esignet.md` (the PS asks for changes in both repositories;
-   the Unstop rules say MOSIP may ask for the code to be contributed).
-3. Create the Drive folder: deck, video, `docs/*.md` (or a PDF export), college IDs; share as viewer.
-4. Send the email (`docs/submission-email.md`).
+1. Create the ThunderID fork (`gh repo fork thunder-id/thunderid --clone=false`); the eSignet fork exists.
+2. Push `feature/ps03-native-sso` **and** `feature/ps03-native-sso-pre-rebase` of `repos/thunderid` and
+   `feature/ps03-native-sso` of `repos/esignet-go` to the forks; then point eSignet's `go.mod` replace at
+   the pushed ThunderID pseudo-version (so the branch builds outside this laptop) and push again; open the
+   PRs with `docs/pr-thunderid.md` and `docs/pr-esignet.md`.
+3. Push the submission repo to GitHub (public), e.g. `gh repo create mosip-decode-2026-native-sso --public --source . --push`,
+   then test `scripts/fetch-backends.sh` + `deploy/docker-compose.yml` from a fresh clone.
+4. Create the Drive folder: deck, video, `docs/*.md` (or a PDF export), college IDs; share as viewer.
+5. Send the email (`docs/submission-email.md`).
