@@ -1,6 +1,6 @@
 {
-  "esignet": "http://localhost:18088",
-  "ran_at": "2026-10-22T17:16:00Z",
+  "esignet": "http://localhost:8088",
+  "ran_at": "2026-10-22T17:19:06Z",
   "results": [
     {
       "status": "PASS",
@@ -30,7 +30,7 @@
     {
       "status": "PASS",
       "name": "device_secret issued",
-      "detail": "2267 chars"
+      "detail": "2266 chars"
     },
     {
       "status": "PASS",
@@ -45,7 +45,7 @@
     {
       "status": "PASS",
       "name": "id_token carries sid",
-      "detail": "01a1649c-cad1-7b36-96b9-a5d42769e6b2"
+      "detail": "01a1649f-a203-7037-bbed-237318951875"
     },
     {
       "status": "PASS",
