@@ -26,7 +26,7 @@ presentation 10 % (medium-complexity PS).
 | B1* | Source code | done | this repo, `repos/thunderid` and `repos/esignet-go` feature branches |
 | B2* | Working prototype / demo | done | local stack + two Android apps installed and verified on device |
 | B3* | Pitch presentation / slide deck | done (needs a visual pass in PowerPoint) | `docs/pitch-deck.pptx` |
-| B4* | Video demo, 2–5 min, problem → solution → key characteristics | done (3:12, silent, title cards + live phone capture) | `docs/demo-video.mp4` (pipeline: `tools/video/`, driver: `tools/demo_driver.js`) |
+| B4* | Video demo, 2–5 min, problem → solution → key characteristics | done, **re-record pending** with the rebuilt apps (narrated; re-consent completes) | `docs/demo-video.mp4` (pipeline: `tools/video/`, driver: `tools/demo_driver.js`) |
 | B5 | Design mockups, wireframes, user-flow diagrams | done | `docs/mockups-and-flows.md` + `docs/images/` |
 | B6 | Architecture diagram | done | `docs/images/architecture.svg`, deck slide 4, design doc §2 |
 | B7 | Test data | done | `docs/test-cases-and-results.md` §Test data |

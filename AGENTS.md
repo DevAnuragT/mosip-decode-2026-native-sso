@@ -111,20 +111,24 @@ demos: `delete from esignet.consent_detail; delete from esignet.consent_history;
 
 ## 4. Open items / next steps
 
-1. **Phone walk-through done (2026-10-21 18:30):** Wallet login (captcha ticked by the user) →
-   Health silent sign-in in 215 ms (act.sub = super app, cnf.jkt = Key A) → "extra claims (phone)"
-   refused with invalid_scope → dialog → eSignet consent flow opens for the Health client.
-   **Demo video done (2026-10-22):** `docs/demo-video.mp4` (3:12, 1080x1920, silent). Pipeline in
-   `tools/video/` (Ghostscript title cards, scrcpy `--time-limit` segments driven by
-   `tools/demo_driver.js`, ffmpeg concat). Consent "Allow" must be a real tap (custom-scheme
-   redirects ignore synthetic clicks). A voice-over can be added later; the cards carry the narration.
-2. Push `feature/ps03-native-sso` of both repos to the forks and open the upstream PRs
-   (`docs/pr-thunderid.md`, `docs/pr-esignet.md`). ThunderID PR needs the rebased branch; eSignet PR
-   builds only with the companion change (state it in the PR).
-3. Pitch deck in `docs/` (generated from this workspace) — keep the PS task table and the security
-   properties slide in sync with `README.md`.
-4. Follow-ups worth mentioning, not required: device-secret revocation on super-app sign-out,
-   single-use `jti` tracking, a consent-screen line item for `device_sso`.
+1. **Review round (2026-10-22, Opus reviewer) applied:** protocol fixes W1–W4 (no inherited
+   `device_sso`, `device_sso` needs `openid`, device secrets always DPoP-bound, `audience` = issuer),
+   `native_sso_supported`, consent never narrowed, e2e 35/35; SDK verifies ID tokens, Wallet IPC
+   signs only eSignet endpoints, Key A prefers StrongBox; `deploy/` compose stack (verified from a
+   clean image), `scripts/fetch-backends.sh`, README "verify in ten minutes", design doc §10–11
+   (conformance matrix, threat model), Postman bonus fixed (email), deck/docs claims reconciled,
+   eSignet branch carries the docs + Postman collection.
+2. **Demo video:** the committed `docs/demo-video.mp4` predates the fixes (silent, re-consent not
+   completed on screen). Re-record with the rebuilt APKs: `tools/video/` now has narration
+   (`narration*.py`, macOS `say`), `cards_encode.sh`, `assemble2.sh`; the driver's `health-reconsent`
+   step finishes the OTP login + consent for the Health client. The phone dropped off USB before the
+   rebuilt APKs could be installed (a waiter installs them when it returns).
+3. Push `feature/ps03-native-sso` (+ `-pre-rebase`) of ThunderID and `feature/ps03-native-sso` of
+   eSignet to the forks (ThunderID fork still to be created), repoint eSignet's `go.mod` replace at
+   the pushed pseudo-version, open the PRs (`docs/pr-*.md`), push this repo, Drive folder, email.
+4. Pitch deck in `docs/` (text patched in place; 35/35, email example) — visual pass still pending.
+5. Follow-ups worth mentioning, not required: device-secret revocation on super-app sign-out,
+   single-use `jti` tracking, child ID token on exchange, consent-screen line item for `device_sso`.
 
 ## 5. Community bug-fix PRs (shortlisting)
 
