@@ -15,7 +15,7 @@ presentation 10 % (medium-complexity PS).
 | A2 | Other mandatory artefacts in a cloud folder (e.g. Google Drive): deck, video, docs, college IDs | **to assemble** | `docs/` has every file; the folder must be created and shared with "anyone with the link" |
 | A3 | Email to `decode@mosip.io` with Team Name, Problem Statement, URLs | **draft ready** | `docs/submission-email.md` |
 | A4 | All links accessible with the necessary permissions | **check before sending** | repo public (or MOSIP granted access), Drive link set to viewer |
-| A5 | 1–2 page overview document or 5–7 slide pitch (Unstop rule) | done | `docs/solution-overview.md` (2 pages) + `docs/pitch-deck.pptx` |
+| A5 | 1–2 page overview document or 5–7 slide pitch (Unstop rule) | done (fill in the team line) | `docs/solution-overview.md` (2 pages) + `docs/pitch-deck.pptx` |
 | A6 | College/university ID per student | **user** | upload to the Drive folder |
 | A7 | Originality, OSI-licensed dependencies, IP contributable to MOSIP | done | all code original; deps Apache/MIT/MPL; both upstream branches DCO signed-off |
 
@@ -26,7 +26,7 @@ presentation 10 % (medium-complexity PS).
 | B1* | Source code | done | this repo, `repos/thunderid` and `repos/esignet-go` feature branches |
 | B2* | Working prototype / demo | done | local stack + two Android apps installed and verified on device |
 | B3* | Pitch presentation / slide deck | done (needs a visual pass in PowerPoint) | `docs/pitch-deck.pptx` |
-| B4* | Video demo, 2–5 min, problem → solution → key characteristics | **recording** | `docs/demo-video.mp4` (script: `docs/demo-video-script.md`) |
+| B4* | Video demo, 2–5 min, problem → solution → key characteristics | **recording** (title cards + assembly ready; phone segments need the USB phone) | `docs/demo-video.mp4` (script: `docs/demo-video-script.md`, driver: `tools/demo_driver.js`) |
 | B5 | Design mockups, wireframes, user-flow diagrams | done | `docs/mockups-and-flows.md` + `docs/images/` |
 | B6 | Architecture diagram | done | `docs/images/architecture.svg`, deck slide 4, design doc §2 |
 | B7 | Test data | done | `docs/test-cases-and-results.md` §Test data |

@@ -81,6 +81,13 @@ compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSign
   `thunderid-signin` (overridden to 100%). Browser caches `variables.css`: clear cache after edits
   (DevTools over `adb forward tcp:9222 localabstract:chrome_devtools_remote` works with Brave).
 
+### Submission docs (`docs/`)
+- `submission-checklist.md` (organiser requirements → evidence), `solution-overview.md` (team line
+  still a placeholder), `api-documentation.md`, `mockups-and-flows.md`, `images/architecture.svg`
+  (render with headless Chrome; qlmanage crops it), `design-document.md`, `test-cases-and-results.md`,
+  `pitch-deck.pptx`, `submission-email.md`, `pr-*.md`, `esignet.env.example`. SDK JVM tests:
+  `./gradlew :nativesso-sdk:testDebugUnitTest` (12 tests).
+
 ### Verification assets
 - `tests/native_sso_e2e.py`: 26/26 against the local stack (drives the login flow API with
   `test-captcha-token`). Results in `tests/results/`.
@@ -106,8 +113,10 @@ demos: `delete from esignet.consent_detail; delete from esignet.consent_history;
 
 1. **Phone walk-through done (2026-10-21 18:30):** Wallet login (captcha ticked by the user) →
    Health silent sign-in in 215 ms (act.sub = super app, cnf.jkt = Key A) → "extra claims (phone)"
-   refused with invalid_scope → dialog → eSignet consent flow opens for the Health client. Still to
-   do: record the demo video (`docs/demo-video-script.md`).
+   refused with invalid_scope → dialog → eSignet consent flow opens for the Health client.
+   **Demo video (2026-10-22):** title cards rendered with Ghostscript (ffmpeg here has no drawtext),
+   `tools/demo_driver.js` drives the phone steps over adb + DevTools, `scrcpy --record` captures the
+   segments; the phone dropped off USB before the recording, so `docs/demo-video.mp4` is still open.
 2. Push `feature/ps03-native-sso` of both repos to the forks and open the upstream PRs
    (`docs/pr-thunderid.md`, `docs/pr-esignet.md`). ThunderID PR needs the rebased branch; eSignet PR
    builds only with the companion change (state it in the PR).
