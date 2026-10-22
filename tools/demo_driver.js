@@ -163,8 +163,23 @@ async function healthReconsent() {
   await sleep(4000);
   await tapText("Continue");
   await sleep(7000);
-  adb("shell input keyevent KEYCODE_BACK");
+  // The embedded engine has no browser session, so the re-consent is a full login for the Health
+  // client followed by its own consent screen (which now lists the phone number).
+  await webClick("/^Login with OTP$/");
+  await sleep(2500);
+  await webType('input[placeholder*="UIN"], .thunderid-text-field__input', UIN);
   await sleep(1500);
+  await webClick("/^Get OTP$/", 40);
+  await sleep(4000);
+  await webTypeOtp(OTP);
+  await sleep(1200);
+  await webClick("/^(Verify|Submit)$/");
+  await sleep(5000);
+  console.log("buttons on consent page:", await webButtons().catch(() => "n/a"));
+  await sleep(2500);
+  await tapText("Allow", 15).catch(async () => { await webClick("/^Allow$/", 10); });
+  await sleep(7000);
+  scroll(true); await sleep(2500); scroll(false); await sleep(1500);
 }
 
 const steps = { "wallet-login": walletLogin, "wallet-show": walletShow, "health-signin": healthSignin, "health-show": healthShow, "health-reconsent": healthReconsent };

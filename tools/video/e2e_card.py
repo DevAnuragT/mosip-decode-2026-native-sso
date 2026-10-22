@@ -20,21 +20,23 @@ lines=[
 ("  PASS  wrong DPoP key -> invalid_grant (cnf.jkt)",GREEN),
 ("  PASS  tampered secret -> invalid_grant (decrypt)",GREEN),
 ("  PASS  bonus: unconsented email -> interaction_required",GREEN),
+("  PASS  audience missing / foreign -> invalid_target",GREEN),
+("  PASS  no openid, no device_sso inherited, cross-login pair",GREEN),
 ("== 4. login without device_sso: no secret, no ds_hash",MUTED),
 ("",MUTED),
-("26/26 checks passed",WHITE),
+("35/35 checks passed",WHITE),
 ("",MUTED),
 ("$ go test ./internal/oauth/... ./pkg/thunderidengine/...   ok",GREEN),
 ("$ go test ./...   (esignet-service)                      ok",GREEN),
-("$ ./gradlew :nativesso-sdk:testDebugUnitTest   12 tests  ok",GREEN),
+("$ ./gradlew :nativesso-sdk:testDebugUnitTest   20 tests  ok",GREEN),
 ]
 ps=["%!PS-Adobe-3.0","<< /PageSize [1080 1920] >> setpagedevice",f"{NAVY} setrgbcolor 0 0 1080 1920 rectfill",
     f"{ORANGE} setrgbcolor 60 1700 960 6 rectfill",
     f"/Helvetica-Bold findfont 26 scalefont setfont {ORANGE} setrgbcolor 60 1740 moveto (BACKEND PROOF  -  LOCAL STACK, 2026-10-22) show",
     f"/Helvetica-Bold findfont 56 scalefont setfont {WHITE} setrgbcolor 60 1620 moveto (Every binding, tested.) show"]
-y=1500
+y=1520
 for t,c in lines:
-    ps.append(f"/Courier-Bold findfont 25 scalefont setfont {c} setrgbcolor 60 {y} moveto ({esc(t)}) show"); y-=46
+    ps.append(f"/Courier-Bold findfont 24 scalefont setfont {c} setrgbcolor 60 {y} moveto ({esc(t)}) show"); y-=44
 ps.append("showpage")
 open("c6.ps","w").write("\n".join(ps))
 subprocess.run(["gs","-q","-dNOPAUSE","-dBATCH","-sDEVICE=png16m","-r72","-o","c6.png","c6.ps"],check=True)

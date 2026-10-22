@@ -4,6 +4,23 @@ Record the phone with `scrcpy --record demo.mp4` (or Android's built-in screen r
 laptop terminal side by side. Keep the phone connected over USB with `adb reverse tcp:8088 tcp:8088`
 and `adb reverse tcp:3000 tcp:3000` active.
 
+## Narration (as recorded in `docs/demo-video.mp4`, macOS text-to-speech; re-record with a human voice if preferred)
+
+| Section | Text |
+|---|---|
+| Title | MOSIP Decode 2026, problem statement three: native single sign-on in eSignet Go for mobile apps. One login, every app. |
+| 1 The problem | Native apps do not share cookies, so every app from the same vendor repeats the full login: UIN, OTP, captcha and consent. Web single sign-on does not exist on a phone, and a shared session would not be bound to the device. |
+| 2 Super app | First, the super app, Vendor Wallet, signs in with pushed authorization, PKCE, DPoP with a hardware key, and the new `device_sso` scope. eSignet returns an access token, an ID token carrying `ds_hash` and `sid`, and a device secret: a signed, then encrypted token that only eSignet can read. |
+| Phone: Wallet login | Vendor Wallet signed out; Key A thumbprint; OTP login in a Custom Tab; consent with voluntary claims off; signed in, device secret stored; `sid`, `ds_hash` and the SHA-256 of the stored secret match. |
+| 3 Child app | Second, the child app, Vendor Health. It asks the Wallet over a signature-protected IPC for the ID token, the device secret and a DPoP proof. Then it performs an RFC 8693 token exchange. eSignet checks the hash binding, the session id, the subject, the key thumbprint and the vendor family, and returns an access token in about two hundred milliseconds. |
+| Phone: Health silent sign-in | One tap; signed in silently; `act.sub` = Wallet; bound key = Wallet's Key A; no device secret on the exchange. |
+| 4 Re-consent | Third, re-consent. When Vendor Health asks for a claim the Wallet never received, eSignet refuses the silent path. The app explains why and opens the normal eSignet consent flow for its own client, so silent sign-in never widens what the user agreed to. |
+| Phone: re-consent | Sign out, extra claims (phone), dialog, Continue, OTP login for Vendor Health, consent listing the phone number, Allow, signed in with its own consent. |
+| Backend proof | Every binding is tested against the live stack (35/35), plus Go and Kotlin unit tests. |
+| Closing | Everything in the problem statement is implemented, plus the bonus. |
+
+The original shot list follows; `tools/video/README.md` has the pipeline.
+
 ## 0:00 – 0:25 · The problem (slide or voice-over)
 
 "Native apps don't share cookies. A citizen with a national wallet app, a health app and a tax app

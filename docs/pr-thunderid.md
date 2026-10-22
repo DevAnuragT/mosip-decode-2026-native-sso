@@ -1,6 +1,6 @@
 # PR: OpenID Connect Native SSO for Mobile Apps (device secrets + token exchange)
 
-Target: `thunder-id/thunderid` `main` · Branch: `feature/ps03-native-sso` (3 commits, DCO signed-off)
+Target: `thunder-id/thunderid` `main` · Branch: `feature/ps03-native-sso` (10 commits, DCO signed-off)
 
 ### Purpose
 
@@ -30,6 +30,14 @@ DPoP-bound access token. Nothing changes for deployments that do not configure a
   it, else `invalid_scope`), refuses `device_sso` on an exchange, asks the consent provider (a
   refusal is `interaction_required`), caches the device secret's claims as the new token's attribute
   cache (filtered to the scopes released), and records the first app as the `act` actor.
+- **Spec guard rails** (Native SSO 1.0 §3.4, §4.1, §5): `device_sso` requires `openid` (checked at
+  PAR/authorize and at the token endpoint) so a device secret is never issued without an ID token;
+  a `device_sso` token request must be DPoP-bound (the secret always carries `cnf.jkt`); the
+  exchange requires `audience` equal to the issuer (`invalid_request` / `invalid_target`), a `scope`
+  that includes `openid` when present, and never inherits `device_sso` when `scope` is omitted;
+  discovery advertises `native_sso_supported: true` when a provider is configured.
+- `ValidateNativeSSOSubjectToken`: an ID token past its `exp` is still a valid subject token on a
+  device-secret exchange (§6.3); signature, `nbf`, `typ` and revocation stay enforced.
 - Constants: `ScopeDeviceSSO`, `TokenTypeIdentifierDeviceSecret`, `ErrorInteractionRequired`.
 
 ### Related Issues
@@ -42,7 +50,7 @@ DPoP-bound access token. Nothing changes for deployments that do not configure a
 - [x] Followed the contribution guidelines.
 - [x] Manual test round performed and verified (eSignet end-to-end test, Android apps).
 - [x] Documentation provided (eSignet `docs/native-sso.md`; provider interfaces documented inline).
-- [x] Tests provided: unit tests in `granthandlers` (authorization code + token exchange) and `oauth2/utils`.
+- [x] Tests provided: unit tests in `granthandlers` (authorization code + token exchange), `oauth2/utils`, `tokenservice` and discovery.
 - [ ] Breaking changes: none (new optional provider; `newTokenExchangeGrantHandler` gains parameters, internal).
 
 ### Security checks
