@@ -35,6 +35,8 @@ object NativeSsoContract {
 
     const val ERROR_NO_SESSION = "NO_ACTIVE_SESSION"
     const val ERROR_SIGNATURE = "CALLER_SIGNATURE_MISMATCH"
+    /** The super app refuses to sign a proof for an `htu` that is not an eSignet endpoint. */
+    const val ERROR_HTU = "htu_not_allowed"
 
     /** Credentials the super app hands a sibling for one token exchange. */
     data class SsoCredentials(val idToken: String, val deviceSecret: String, val dpopProof: String, val dpopJkt: String, val subject: String?)

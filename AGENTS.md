@@ -22,8 +22,8 @@
 | Path | Git | Branch of record | Notes |
 |---|---|---|---|
 | `/Users/anurag/MOSIP hack` (this folder) | own repo (`master`) | — | Submission repo: `mobile-sample/`, `tests/`, `postman/`, `docs/`, `README.md`. `repos/` and `scratch/` are git-ignored. |
-| `repos/thunderid` | fork checkout of `thunder-id/thunderid` | `feature/ps03-native-sso` (rebased on `origin/main`, 3 commits) | **PR branch.** `feature/ps03-native-sso-pre-rebase` holds the same work on the older base that eSignet `develop-go` pins; keep both in sync (cherry-pick) — eSignet is built against the pre-rebase branch. |
-| `repos/esignet-go` | checkout of `mosip/esignet` (`origin`), fork remote `fork` = DevAnuragT/esignet | `feature/ps03-native-sso` (rebased on `origin/develop-go`, 5 commits) | **PR branch.** Go code lives on `develop-go`, never rebase onto `master` (Java). `go.mod` replaces thunderid with `../../thunderid/backend`. `fix/2555-...` carries the separate community bug fix. |
+| `repos/thunderid` | fork checkout of `thunder-id/thunderid` | `feature/ps03-native-sso` (rebased on `origin/main`, 10 commits) | **PR branch.** `feature/ps03-native-sso-pre-rebase` holds the same work on the older base that eSignet `develop-go` pins; keep both in sync (cherry-pick) — eSignet is built against the pre-rebase branch. |
+| `repos/esignet-go` | checkout of `mosip/esignet` (`origin`), fork remote `fork` = DevAnuragT/esignet | `feature/ps03-native-sso` (rebased on `origin/develop-go`, 9+ commits) | **PR branch.** Go code lives on `develop-go`, never rebase onto `master` (Java). `go.mod` replaces thunderid with `../../thunderid/backend`. `fix/2555-...` carries the separate community bug fix. |
 
 Version skew to remember: eSignet `develop-go` pins ThunderID at an Aug-2026 commit (Go 1.26);
 ThunderID `main` needs Go 1.27.2 and changed the authn provider interface, so eSignet does **not**
@@ -89,7 +89,7 @@ compile against ThunderID `main`. Do not commit a `go mod tidy` that bumps eSign
   `./gradlew :nativesso-sdk:testDebugUnitTest` (12 tests).
 
 ### Verification assets
-- `tests/native_sso_e2e.py`: 26/26 against the local stack (drives the login flow API with
+- `tests/native_sso_e2e.py`: 35/35 against the local stack (drives the login flow API with
   `test-captcha-token`). Results in `tests/results/`.
 - `postman/build_collection.py` → collection + env (Postman desktop app; newman lacks WebCrypto/top-level await).
 

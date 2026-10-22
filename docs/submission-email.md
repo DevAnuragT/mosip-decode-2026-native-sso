@@ -15,7 +15,7 @@ Please find our submission for **Problem Statement 03: eSignet | Enable Native S
 - **Artefacts (Google Drive, viewer access for anyone with the link):** <Drive URL>
   - Pitch deck, demo video, design document, API documentation, test cases and results, solution overview, college IDs
 
-What is in the submission: OpenID Connect Native SSO for Mobile Apps 1.0 implemented in eSignet (Go) and the ThunderID engine (all mandatory tasks and the bonus re-consent task), two Android reference apps signed with one vendor certificate, a laptop-side end-to-end test (26 checks), a Postman collection, and full documentation. The README explains how to run everything locally with Docker Compose and the mock identity system.
+What is in the submission: OpenID Connect Native SSO for Mobile Apps 1.0 implemented in eSignet (Go) and the ThunderID engine (all mandatory tasks and the bonus re-consent task), two Android reference apps signed with one vendor certificate, a laptop-side end-to-end test (35 checks), a Postman collection, and full documentation. The README explains how to run everything locally with Docker Compose and the mock identity system.
 
 Thank you,
 <Name>, <phone>

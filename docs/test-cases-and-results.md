@@ -1,12 +1,12 @@
 # Test cases and results
 
-Three layers of tests cover the feature. All of them pass on 2026-10-21 against the code in the
+Three layers of tests cover the feature. All of them pass on 2026-10-22 against the code in the
 feature branches.
 
 ## 1. End-to-end protocol test (`tests/native_sso_e2e.py`)
 
 Runs against a live eSignet (Go) with the mock identity system, playing both apps from the laptop.
-26/26 checks pass; the JSON report is in `tests/results/native_sso_e2e.json`.
+35/35 checks pass; the JSON report is in `tests/results/native_sso_e2e.json` (tracked in git).
 
 | # | Case | Expected | Result |
 |---|---|---|---|
@@ -36,6 +36,15 @@ Runs against a live eSignet (Go) with the mock identity system, playing both app
 | B1 | Bonus: child asks for `email`, which was unticked at the super app's consent | `interaction_required` "email" | PASS |
 | P1 | Login without `device_sso` issues no device secret | absent | PASS |
 | P2 | … and no `ds_hash` | absent | PASS |
+| D1 | Discovery advertises `native_sso_supported: true` (Native SSO §5) | present | PASS |
+| N7 | Exchange `scope` without `openid` | `invalid_scope` "must include the openid scope" | PASS |
+| N8 | Exchange without `audience` (§4.1) | `invalid_request` | PASS |
+| N9 | Exchange with an `audience` other than the issuer (§4.1) | `invalid_target` | PASS |
+| N10 | PAR with `profile device_sso` and no `openid` (§3.4) | `invalid_scope` "requires the openid scope" | PASS |
+| S9 | A second `device_sso` login issues both an ID token and a device secret | both present | PASS |
+| C8 | Exchange without `scope` | 200, granted `openid profile` | PASS |
+| N11 | 10.b inherited scope never contains `device_sso` | absent | PASS |
+| N12 | ID token of one login with the device secret of another | `invalid_grant` "ds_hash … does not match" | PASS |
 
 ## 2. Unit tests
 

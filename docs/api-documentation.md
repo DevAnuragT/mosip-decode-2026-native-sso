@@ -106,6 +106,9 @@ default in eSignet Go):
 ```
 
 A client that is not registered with `device_sso` in `allowed_authorization_scopes` cannot obtain the scope.
+`device_sso` requires `openid` in the same request (`invalid_scope` otherwise, Native SSO §3.4), and the
+later token request must carry a DPoP proof (`invalid_request` otherwise): a device secret is always
+bound to a key.
 
 ## 4. Authorize
 

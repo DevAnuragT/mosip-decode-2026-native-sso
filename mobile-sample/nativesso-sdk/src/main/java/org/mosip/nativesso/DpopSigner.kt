@@ -41,15 +41,46 @@ class KeystoreDpopSigner(private val alias: String = DEFAULT_ALIAS) : DpopSigner
     private fun ensureKey() {
         val ks = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         if (ks.containsAlias(alias)) return
+        // Prefer the StrongBox secure element (PS task 4.a.i); fall back to the TEE-backed keystore on
+        // devices without one. Either way the private key is non-exportable.
+        try {
+            generate(strongBox = true)
+        } catch (e: Exception) {
+            if (e !is android.security.keystore.StrongBoxUnavailableException &&
+                e.cause !is android.security.keystore.StrongBoxUnavailableException) throw e
+            generate(strongBox = false)
+        }
+    }
+
+    private fun generate(strongBox: Boolean) {
         val spec = KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY)
             .setAlgorithmParameterSpec(java.security.spec.ECGenParameterSpec("secp256r1"))
             .setDigests(KeyProperties.DIGEST_SHA256)
             // Silent SSO must work without a user-presence prompt in the child app.
             .setUserAuthenticationRequired(false)
+            .setIsStrongBoxBacked(strongBox)
             .build()
         KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEYSTORE).run {
             initialize(spec)
             generateKeyPair()
+        }
+    }
+
+    /** Where Key A lives: "StrongBox", "TEE" or "software" (shown on the Wallet's details card). */
+    fun securityLevel(): String {
+        val ks = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+        val key = ks.getKey(alias, null) ?: return "unknown"
+        val factory = java.security.KeyFactory.getInstance(key.algorithm, ANDROID_KEYSTORE)
+        val info = factory.getKeySpec(key, android.security.keystore.KeyInfo::class.java)
+        return when {
+            android.os.Build.VERSION.SDK_INT >= 31 -> when (info.securityLevel) {
+                KeyProperties.SECURITY_LEVEL_STRONGBOX -> "StrongBox"
+                KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT -> "TEE"
+                else -> "software"
+            }
+            @Suppress("DEPRECATION")
+            info.isInsideSecureHardware -> "TEE"
+            else -> "software"
         }
     }
 

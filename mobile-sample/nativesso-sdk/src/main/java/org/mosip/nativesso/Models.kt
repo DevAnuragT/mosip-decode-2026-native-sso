@@ -9,12 +9,14 @@ data class OidcDiscovery(
     val parEndpoint: String,
     val tokenEndpoint: String,
     val userinfoEndpoint: String,
+    val jwksUri: String,
     val grantTypesSupported: List<String>,
     val scopesSupported: List<String>,
 ) {
     companion object {
         fun from(json: JSONObject) = OidcDiscovery(
             issuer = json.getString("issuer"),
+            jwksUri = json.getString("jwks_uri"),
             authorizationEndpoint = json.getString("authorization_endpoint"),
             parEndpoint = json.getString("pushed_authorization_request_endpoint"),
             tokenEndpoint = json.getString("token_endpoint"),

@@ -36,7 +36,7 @@ app. A shared browser session does not exist on native apps and would not bind t
   configuration and OpenAPI.
 - **Android** (`mobile-sample/`): `nativesso-sdk` library, Vendor Wallet and Vendor Health, signed with
   one vendor certificate.
-- **Tests**: 26-check end-to-end script (26/26 pass), unit tests in both repositories and a phone walk-through
+- **Tests**: 35-check end-to-end script (35/35 pass), unit tests in both repositories and a phone walk-through
   on a OnePlus CPH2531 (Android 15). See [test cases and results](test-cases-and-results.md).
 - **Postman collection** in `postman/`, a modern minimal login theme in `ui-theme/`.
 - **Documents**: [design document](design-document.md), [API documentation](api-documentation.md),

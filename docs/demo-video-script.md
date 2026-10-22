@@ -41,7 +41,7 @@ and the ThunderID engine so that one login is reused, silently and safely."
 
 ## 2:50 – 3:30 · Backend proof (laptop)
 
-8. Run `python3 tests/native_sso_e2e.py` and show the 26/26 green lines: ds_hash binding, sid,
+8. Run `python3 tests/native_sso_e2e.py` and show the 35/35 green lines: ds_hash binding, sid,
    key binding, scope escalation rejected, device_sso rejected on exchange, vendor isolation, wrong
    DPoP key, tampered secret, interaction_required for the unconsented claim.
 9. Show `go test` summaries of ThunderID and eSignet.

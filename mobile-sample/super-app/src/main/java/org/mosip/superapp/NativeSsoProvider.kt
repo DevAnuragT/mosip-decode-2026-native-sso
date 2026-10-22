@@ -37,6 +37,12 @@ class NativeSsoProvider : ContentProvider() {
         val htm = extras?.getString(NativeSsoContract.EXTRA_HTM) ?: "POST"
         val htu = extras?.getString(NativeSsoContract.EXTRA_HTU)
             ?: return Bundle().apply { putString(NativeSsoContract.EXTRA_ERROR, "missing htu") }
+        // Key A only ever signs proofs for eSignet's token and userinfo endpoints. Without this check
+        // the provider would be a general-purpose signing oracle for any sibling app.
+        if (!repo.isEsignetEndpoint(htm, htu)) {
+            Log.w(TAG, "Rejected $method from $callerPackages: $htm $htu is not an eSignet endpoint")
+            return Bundle().apply { putString(NativeSsoContract.EXTRA_ERROR, NativeSsoContract.ERROR_HTU) }
+        }
 
         return when (method) {
             NativeSsoContract.METHOD_GET_SSO_CREDENTIALS -> {

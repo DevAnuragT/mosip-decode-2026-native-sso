@@ -103,12 +103,12 @@ class EsignetClient(
             .header("DPoP", dpop.proof("POST", d.tokenEndpoint))
             .post(form).build()
         val tokens = TokenSet.from(execute(req))
-        tokens.idToken?.let { verifyNonce(it, pending.nonce) }
+        tokens.idToken?.let { verifyIdToken(it, pending.nonce) }
         return tokens
     }
 
     /**
-     * Silent sign-in (OpenID Connect Native SSO for Mobile Apps 1.0 §5): exchanges the super app's
+     * Silent sign-in (OpenID Connect Native SSO for Mobile Apps 1.0 §4): exchanges the super app's
      * ID token and device secret for this app's own access token. [dpopProof] must be signed by
      * Key A for `POST {token_endpoint}`; the super app produces it over IPC. [scope] must include
      * `openid`; the `audience` parameter is the issuer URL (Native SSO 1.0 §4.1).
@@ -150,9 +150,28 @@ class EsignetClient(
         }
     }
 
-    private fun verifyNonce(idToken: String, nonce: String) {
-        val payload = Codec.jwtPayload(idToken)
-        if (payload.optString("nonce") != nonce) throw OAuthException("invalid_id_token", "nonce mismatch", 200)
+    @Volatile private var jwks: JSONObject? = null
+
+    /** The issuer's JWKS (fetched once per client instance). */
+    fun jwks(): JSONObject {
+        jwks?.let { return it }
+        val req = Request.Builder().url(discover().jwksUri).get().build()
+        return execute(req).also { jwks = it }
+    }
+
+    /**
+     * OIDC Core §3.1.3.7: signature against the issuer's JWKS, `iss`, `aud`, `exp` and `nonce`.
+     * A key rollover is handled by refetching the JWKS once.
+     */
+    private fun verifyIdToken(idToken: String, nonce: String) {
+        val d = discover()
+        try {
+            IdTokenVerifier(d.issuer, clientId, jwks()).verify(idToken, nonce)
+        } catch (e: OAuthException) {
+            if (!e.description.orEmpty().startsWith("no JWK")) throw e
+            jwks = null
+            IdTokenVerifier(d.issuer, clientId, jwks()).verify(idToken, nonce)
+        }
     }
 
     private fun execute(req: Request): JSONObject {

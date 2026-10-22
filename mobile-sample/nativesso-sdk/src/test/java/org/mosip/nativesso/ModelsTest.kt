@@ -41,12 +41,12 @@ class ModelsTest {
         val d = OidcDiscovery.from(JSONObject("""{
             "issuer":"https://i","authorization_endpoint":"https://i/a",
             "pushed_authorization_request_endpoint":"https://i/par",
-            "token_endpoint":"https://i/t","userinfo_endpoint":"https://i/u"}"""))
+            "token_endpoint":"https://i/t","userinfo_endpoint":"https://i/u", "jwks_uri": "https://i/u/.well-known/jwks.json"}"""))
         assertEquals("https://i/par", d.parEndpoint)
         assertEquals(emptyList(), d.grantTypesSupported)
         val d2 = OidcDiscovery.from(JSONObject("""{
             "issuer":"i","authorization_endpoint":"a","pushed_authorization_request_endpoint":"p",
-            "token_endpoint":"t","userinfo_endpoint":"u","scopes_supported":["openid","device_sso"]}"""))
+            "token_endpoint":"t","userinfo_endpoint":"u", "jwks_uri": "u/.well-known/jwks.json","scopes_supported":["openid","device_sso"]}"""))
         assertEquals(listOf("openid", "device_sso"), d2.scopesSupported)
     }
 }

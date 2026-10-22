@@ -37,6 +37,12 @@ class AuthRepository private constructor(context: Context) {
     val tokens: TokenSet? get() = store.tokens
     val isSignedIn: Boolean get() = store.tokens?.deviceSecret != null
 
+    /** True for `POST {token_endpoint}` and `GET {userinfo_endpoint}` of the configured eSignet. */
+    fun isEsignetEndpoint(htm: String, htu: String): Boolean {
+        val d = client.discover()
+        return (htm == "POST" && htu == d.tokenEndpoint) || (htm == "GET" && htu == d.userinfoEndpoint)
+    }
+
     /** Starts a PAR + PKCE + DPoP authorization and returns the browser URL. */
     fun beginSignIn(): Uri {
         val claims = JSONObject().put("userinfo", JSONObject()
@@ -75,6 +81,7 @@ class AuthRepository private constructor(context: Context) {
             Triple("Client", BuildConfig.CLIENT_ID, false),
             Triple("eSignet", BuildConfig.ESIGNET_BASE_URL, false),
             Triple("Key A (hardware DPoP key) thumbprint", dpop.thumbprint(), true),
+            Triple("Key A security level", runCatching { dpop.securityLevel() }.getOrDefault("unknown"), false),
         )
         val t = store.tokens ?: return rows + Triple("Session", "No session: sign in to receive a device secret", false)
         val id = t.idToken?.let { runCatching { Codec.jwtPayload(it) }.getOrNull() }

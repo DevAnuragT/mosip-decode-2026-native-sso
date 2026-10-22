@@ -38,7 +38,7 @@ secret for its own DPoP-bound access token without a second login or consent scr
 ```bash
 cd esignet-service && go test ./...
 # end to end (docker-compose dependent services + ./make.sh run), from the hackathon repository:
-python3 tests/native_sso_e2e.py   # 26 checks: issuance, binding, exchange, negative cases, re-consent
+python3 tests/native_sso_e2e.py   # 35 checks: issuance, binding, exchange, negative cases, re-consent
 ```
 
 ## Dependencies

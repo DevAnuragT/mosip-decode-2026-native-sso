@@ -76,7 +76,9 @@ class MainActivity : AppCompatActivity() {
                         status.text = getString(R.string.status_reconsent)
                         MaterialAlertDialogBuilder(this@MainActivity)
                             .setTitle("Your consent is needed")
-                            .setMessage("eSignet will not sign you in silently for these claims:\n\n${outcome.reason}\n\nContinue to review and approve them in the browser.")
+                            .setMessage("Vendor Health needs more than you approved for Vendor Wallet, so eSignet " +
+                                "will not sign you in silently. Continue to review and approve the extra claims " +
+                                "in the browser.\n\nDetail from eSignet: ${outcome.reason}")
                             .setPositiveButton("Continue") { _, _ ->
                                 CustomTabsIntent.Builder().build().launchUrl(this@MainActivity, outcome.browserUrl)
                             }
