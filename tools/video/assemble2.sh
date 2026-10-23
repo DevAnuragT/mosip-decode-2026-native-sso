@@ -4,12 +4,13 @@
 # max(trim, narration + 1 s). Cards (card0..card6.mp4) already carry theirs.
 set -e
 cd "$(dirname "$0")"
-TRIM=(78 30 70)
+TRIM=(78 30 68)
+START=(0 0 2)
 i=1
 for s in "$1" "$2" "$3"; do
   nlen=$(ffprobe -v error -show_entries format=duration -of csv=p=0 s$i.aiff)
   dur=$(python3 -c "print(max(${TRIM[$i]}, round($nlen+1.0,2)))")
-  ffmpeg -y -loglevel error -i "$s" -i s$i.aiff -t $dur \
+  ffmpeg -y -loglevel error -ss ${START[$i]} -i "$s" -i s$i.aiff -t $dur \
     -vf "scale=-2:1920,pad=1080:1920:(ow-iw)/2:0:color=0x16213A,setsar=1,fps=30,tpad=stop_mode=clone:stop_duration=60" \
     -af "apad,aresample=48000" -ac 2 -c:v libx264 -preset fast -pix_fmt yuv420p -c:a aac seg$i.mp4
   echo "seg$i $dur s"

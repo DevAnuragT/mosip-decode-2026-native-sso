@@ -13,6 +13,8 @@
     <string name="details_title">Native SSO details</string>
     <string name="chip_signed_out">Signed out</string>
     <string name="chip_signed_in">Signed in via Native SSO</string>
+    <string name="chip_signed_in_interactive">Signed in after re-consent</string>
+    <string name="status_signed_in_interactive">eSignet asked you to approve the extra claims in the browser; this app now has its own consent and tokens.</string>
     <string name="chip_busy">Working…</string>
     <string name="section_profile">Your profile (userinfo)</string>
 </resources>

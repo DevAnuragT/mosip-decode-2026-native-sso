@@ -155,6 +155,8 @@ async function healthShow() {
 }
 
 async function healthReconsent() {
+  adb("shell am start -n org.mosip.childapp/.MainActivity >/dev/null");
+  await sleep(2500);
   for (let i = 0; i < 3; i++) { scroll(true); await sleep(600); }
   await tapId("org.mosip.childapp:id/signOut", 3).catch(() => {});
   await sleep(800);

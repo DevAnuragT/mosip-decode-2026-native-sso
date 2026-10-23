@@ -37,10 +37,14 @@ class AuthRepository private constructor(context: Context) {
     val tokens: TokenSet? get() = store.tokens
     val isSignedIn: Boolean get() = store.tokens?.deviceSecret != null
 
-    /** True for `POST {token_endpoint}` and `GET {userinfo_endpoint}` of the configured eSignet. */
+    /**
+     * True for the eSignet endpoints a sibling may need a Key A proof for: `POST` PAR (its
+     * interactive fallback binds the code to Key A with `dpop_jkt`), `POST` token and `GET` userinfo.
+     */
     fun isEsignetEndpoint(htm: String, htu: String): Boolean {
         val d = client.discover()
-        return (htm == "POST" && htu == d.tokenEndpoint) || (htm == "GET" && htu == d.userinfoEndpoint)
+        return (htm == "POST" && (htu == d.tokenEndpoint || htu == d.parEndpoint)) ||
+            (htm == "GET" && htu == d.userinfoEndpoint)
     }
 
     /** Starts a PAR + PKCE + DPoP authorization and returns the browser URL. */

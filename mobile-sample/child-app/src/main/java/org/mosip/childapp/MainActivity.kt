@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var signInMore: MaterialButton
     private lateinit var signOut: MaterialButton
     private var lastSilentMillis: Long? = null
+    private var signedInInteractively = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         signIn.setOnClickListener { signIn(ChildAuthRepository.SCOPE_DEFAULT) }
         signInMore.setOnClickListener { signIn(ChildAuthRepository.SCOPE_EXTRA) }
-        signOut.setOnClickListener { repo.signOut(); lastSilentMillis = null; render() }
+        signOut.setOnClickListener { repo.signOut(); lastSilentMillis = null; signedInInteractively = false; render() }
 
         render()
         handleRedirect(intent)
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                 when (val outcome = withContext(Dispatchers.IO) { repo.signIn(scope) }) {
                     is ChildAuthRepository.Outcome.Silent -> {
                         lastSilentMillis = outcome.millis
+                        signedInInteractively = false
                         render()
                         Snackbar.make(status, "Silent sign-in took ${outcome.millis} ms", Snackbar.LENGTH_LONG).show()
                     }
@@ -111,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 withContext(Dispatchers.IO) { repo.completeInteractive(data) }
                 lastSilentMillis = null
+                signedInInteractively = true
                 Snackbar.make(status, "Consent captured; signed in", Snackbar.LENGTH_LONG).show()
             } catch (e: Exception) {
                 Snackbar.make(status, "Sign-in failed: ${e.message}", Snackbar.LENGTH_LONG).show()
@@ -129,9 +132,14 @@ class MainActivity : AppCompatActivity() {
         statusChip.text = when {
             !signedIn -> getString(R.string.chip_signed_out)
             lastSilentMillis != null -> "Signed in silently in $lastSilentMillis ms"
+            signedInInteractively -> getString(R.string.chip_signed_in_interactive)
             else -> getString(R.string.chip_signed_in)
         }
-        status.text = getString(if (signedIn) R.string.status_signed_in else R.string.status_signed_out)
+        status.text = getString(when {
+            !signedIn -> R.string.status_signed_out
+            signedInInteractively -> R.string.status_signed_in_interactive
+            else -> R.string.status_signed_in
+        })
 
         val info: JSONObject? = if (signedIn) repo.userInfo() else null
         profileCard.visibility = if (info != null) View.VISIBLE else View.GONE

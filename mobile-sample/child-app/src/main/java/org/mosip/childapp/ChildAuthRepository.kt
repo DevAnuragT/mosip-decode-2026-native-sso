@@ -87,7 +87,13 @@ class ChildAuthRepository private constructor(private val context: Context) {
             // invalid_scope: the scope exceeds what the wallet was granted (task 10.a). Both mean
             // the silent path is over and the user must consent interactively (bonus task).
             if (!e.interactionRequired && e.error != "invalid_scope") throw e
-            val (url, pending) = esignet.beginAuthorization(scope, BuildConfig.REDIRECT_URI, prompt = "consent")
+            // Ask for the claims this app needs as essential, so the consent screen presents them as
+            // required rather than as voluntary toggles that default to off.
+            val claims = JSONObject().put("userinfo", JSONObject().apply {
+                put("name", JSONObject().put("essential", true))
+                if (scope.split(" ").contains("phone")) put("phone_number", JSONObject().put("essential", true))
+            })
+            val (url, pending) = esignet.beginAuthorization(scope, BuildConfig.REDIRECT_URI, claims, prompt = "consent")
             store.pending = pending
             Outcome.InteractionRequired(url, e.description)
         }

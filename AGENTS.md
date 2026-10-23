@@ -108,6 +108,13 @@ Mock identity: UIN `1774231323`, OTP `111111`. Captcha: Cloudflare Turnstile dum
 validator URL so any non-empty token is accepted locally. Never automate a real captcha. To reset consent between
 demos: `delete from esignet.consent_detail; delete from esignet.consent_history;` in the
 `mosip_esignet` database (`docker compose exec database psql -U postgres -d mosip_esignet`).
+After a Docker restart the mock identity container fails twice over: its entrypoint cannot re-unzip
+the HSM client (`mv: cannot overwrite 'hsm-client/client'`) and, once recreated, its keymanager finds
+`key_alias` rows in `mosip_mockidentitysystem` for a PKCS12 file that no longer exists
+(`KER-KMA-004 No such alias`). Fix: `delete from mockidentitysystem.key_store; delete from
+mockidentitysystem.key_alias;` then `docker compose -f dependent-docker-compose.yaml up -d
+--force-recreate mock-identity-system`. Symptom in eSignet: `send_otp_failed`, the e2e script stops at
+the UIN step.
 
 ## 4. Open items / next steps
 
