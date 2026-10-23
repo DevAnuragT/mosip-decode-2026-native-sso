@@ -125,11 +125,11 @@ the UIN step.
    clean image), `scripts/fetch-backends.sh`, README "verify in ten minutes", design doc §10–11
    (conformance matrix, threat model), Postman bonus fixed (email), deck/docs claims reconciled,
    eSignet branch carries the docs + Postman collection.
-2. **Demo video:** the committed `docs/demo-video.mp4` predates the fixes (silent, re-consent not
-   completed on screen). Re-record with the rebuilt APKs: `tools/video/` now has narration
-   (`narration*.py`, macOS `say`), `cards_encode.sh`, `assemble2.sh`; the driver's `health-reconsent`
-   step finishes the OTP login + consent for the Health client. The phone dropped off USB before the
-   rebuilt APKs could be installed (a waiter installs them when it returns).
+2. **Demo video re-recorded (2026-10-23):** `docs/demo-video.mp4`, 4:50, narrated (macOS `say`,
+   Samantha), rebuilt apps, re-consent completes on screen (OTP login + essential claims + Allow).
+   Pipeline: `tools/video/` (`cards.py`, `e2e_card.py`, `narration*.py`, `cards_encode.sh`,
+   `assemble2.sh`); segments driven by `tools/demo_driver.js` under `scrcpy --time-limit`. Replace
+   the narration with a human voice if preferred (texts in `docs/demo-video-script.md`).
 3. Push `feature/ps03-native-sso` (+ `-pre-rebase`) of ThunderID and `feature/ps03-native-sso` of
    eSignet to the forks (ThunderID fork still to be created), repoint eSignet's `go.mod` replace at
    the pushed pseudo-version, open the PRs (`docs/pr-*.md`), push this repo, Drive folder, email.

@@ -1,7 +1,7 @@
 # Demo video pipeline
 
-`docs/demo-video.mp4` (1080x1920, 30 fps, ~3:10) is produced from three phone recordings and seven
-title cards, with no manual editing:
+`docs/demo-video.mp4` (1080x1920, 30 fps, 4:50, narrated with macOS text-to-speech) is produced from
+three phone recordings and seven title cards, with no manual editing:
 
 ```bash
 python3 cards.py && python3 e2e_card.py          # title cards (Ghostscript; ffmpeg here has no drawtext)

@@ -4,7 +4,7 @@
 # max(trim, narration + 1 s). Cards (card0..card6.mp4) already carry theirs.
 set -e
 cd "$(dirname "$0")"
-TRIM=(78 30 68)
+TRIM=(70 30 64)
 START=(0 0 2)
 i=1
 for s in "$1" "$2" "$3"; do
