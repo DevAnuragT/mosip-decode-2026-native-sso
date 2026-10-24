@@ -1,5 +1,6 @@
 import subprocess, sys
-VOICE="Samantha"
+import os
+VOICE=os.environ.get("VOICE","Samantha")  # e.g. VOICE="Ava (Premium)" once downloaded in System Settings
 texts = {
  "n0": "MOSIP Decode 2026, problem statement three: native single sign-on in eSignet Go for mobile apps. One login, every app.",
  "n1": "The problem. Native apps do not share cookies, so every app from the same vendor repeats the full login: UIN, OTP, captcha and consent. Web single sign-on does not exist on a phone, and a shared session would not be bound to the device.",
