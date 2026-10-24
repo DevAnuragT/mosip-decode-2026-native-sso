@@ -32,4 +32,5 @@ shrink below 70 / 30 / 64 s). Tips: record in a quiet room, phone 20 cm from the
 piece, trim silence at the start and end. If the macOS premium voices are installed instead
 (System Settings → Accessibility → Spoken Content → System Voice → Manage Voices, download
 "Ava (Premium)" or "Zoe (Premium)"), regenerate the synthetic narration with
-`VOICE="Ava (Premium)" python3 narration.py && VOICE="Ava (Premium)" python3 narration_phone.py`.
+`VOICE="Ava (Premium)" python3 narration.py && VOICE="Ava (Premium)" python3 narration_phone.py`
+(`RATE`, default 200 words per minute, controls the pace; the shipped cut uses Ava Premium).

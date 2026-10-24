@@ -11,6 +11,6 @@ texts = {
  "n6": "Every binding is tested against the live stack: the hash binding, the session id, key binding, scope escalation, device S S O on exchange, vendor isolation, a wrong DPoP key, a tampered secret, and interaction required for an unconsented claim. Go and Kotlin unit tests pass as well.",
 }
 for k,v in texts.items():
-    subprocess.run(["say","-v",VOICE,"-r","185","-o",f"{k}.aiff",v],check=True)
+    subprocess.run(["say","-v",VOICE,"-r",os.environ.get("RATE","200"),"-o",f"{k}.aiff",v],check=True)
     out=subprocess.run(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",f"{k}.aiff"],capture_output=True,text=True).stdout.strip()
     print(k, out)

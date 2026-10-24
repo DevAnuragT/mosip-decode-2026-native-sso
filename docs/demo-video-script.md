@@ -4,7 +4,7 @@ Record the phone with `scrcpy --record demo.mp4` (or Android's built-in screen r
 laptop terminal side by side. Keep the phone connected over USB with `adb reverse tcp:8088 tcp:8088`
 and `adb reverse tcp:3000 tcp:3000` active.
 
-## Narration (as recorded in `docs/demo-video.mp4`, macOS text-to-speech; re-record with a human voice if preferred)
+## Narration (as recorded in `docs/demo-video.mp4`, macOS text-to-speech with the Ava Premium voice; re-record with a human voice if preferred)
 
 | Section | Text |
 |---|---|

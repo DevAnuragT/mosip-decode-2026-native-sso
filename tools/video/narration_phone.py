@@ -7,6 +7,6 @@ texts={
  "s3": "Finally the bonus. We sign out of Vendor Health and ask for extra claims, the phone number, which the Wallet was never granted. eSignet refuses the silent path. The app explains that it needs more than the user approved for the Wallet and offers to continue in the browser. There, the normal eSignet flow runs for Vendor Health itself: OTP login, then a consent screen that now lists the phone number. We approve it, and Vendor Health is signed in with its own consent. Silent sign-in never widens what the user agreed to.",
 }
 for k,v in texts.items():
-    subprocess.run(["say","-v",VOICE,"-r","180","-o",f"{k}.aiff",v],check=True)
+    subprocess.run(["say","-v",VOICE,"-r",os.environ.get("RATE","200"),"-o",f"{k}.aiff",v],check=True)
     out=subprocess.run(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",f"{k}.aiff"],capture_output=True,text=True).stdout.strip()
     print(k, out)

@@ -1,6 +1,6 @@
 # Demo video pipeline
 
-`docs/demo-video.mp4` (1080x1920, 30 fps, 4:50, narrated with macOS text-to-speech) is produced from
+`docs/demo-video.mp4` (1080x1920, 30 fps, 4:43, narrated with macOS text-to-speech, Ava Premium) is produced from
 three phone recordings and seven title cards, with no manual editing:
 
 ```bash
