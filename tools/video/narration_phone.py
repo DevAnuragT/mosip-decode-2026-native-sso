@@ -1,12 +1,13 @@
-import subprocess
-import os
-VOICE=os.environ.get("VOICE","Samantha")  # e.g. VOICE="Ava (Premium)" once downloaded in System Settings
+import subprocess, os
+VOICE=os.environ.get("VOICE","Ava (Premium)")
+RATE=os.environ.get("RATE","190")
+P=" [[slnc 400]] "
 texts={
- "s1": "This is Vendor Wallet, the super app, signed out. The details card already shows the client id, the eSignet URL and the thumbprint of Key A, a hardware key in the Android Keystore. Tapping Sign in with eSignet opens the login in a Custom Tab. We choose OTP, enter the UIN, the Turnstile test captcha passes by itself, and we enter the one time password. On the consent screen we keep the essential claim and leave the voluntary ones off, then tap Allow. Back in the Wallet: signed in, device secret stored. The native SSO details show the session id, the D S hash from the ID token, and the SHA-256 of the stored device secret: they match, so the ID token is bound to this device secret. The device secret itself is an encrypted token the app cannot read.",
- "s2": "Now Vendor Health, the child app. Nothing is stored here and there is no browser session. One tap on Sign in. Within a fraction of a second the app is signed in silently, and the profile shows the user's name from userinfo. In the details: the token type is DPoP, the actor claim names the Wallet as the app that vouched for this sign-in, and the bound key is the Wallet's Key A. Vendor Health never had a key of its own: the Wallet signed each proof over a signature-protected IPC. No device secret was returned on the exchange.",
- "s3": "Finally the bonus. We sign out of Vendor Health and ask for extra claims, the phone number, which the Wallet was never granted. eSignet refuses the silent path. The app explains that it needs more than the user approved for the Wallet and offers to continue in the browser. There, the normal eSignet flow runs for Vendor Health itself: OTP login, then a consent screen that now lists the phone number. We approve it, and Vendor Health is signed in with its own consent. Silent sign-in never widens what the user agreed to.",
+ "s1": f"Let's watch it.{P}This is Vendor Wallet, signed out. Down here you can already see the client id, the eSignet address, and the thumbprint of Key A. That's a hardware key living in the phone's keystore.{P}We tap sign in. eSignet opens in a browser tab. OTP, the test UIN, the captcha passes on its own, and the one-time code.{P}Now the consent screen. We keep the required claim and leave the optional ones off. Allow.{P}And we're back in the Wallet. Signed in, device secret stored.{P}Look at the details. The session id, the hash from the ID token, and the hash of the secret we stored. They match. So this ID token belongs to this device secret, and nothing else.{P}The secret itself? Encrypted. The app can't read it, and doesn't need to.",
+ "s2": f"Now the fun part. Vendor Health.{P}Nothing's stored here. No browser session, nothing.{P}One tap on sign in.{P}And that's it. Signed in, in under a fifth of a second, and the profile shows the user's name.{P}Scroll down. The token is bound to a key. The actor claim says the Wallet vouched for this. And the key is the Wallet's Key A. Health never had a key of its own. It asked the Wallet to sign for it, and no device secret came back.",
+ "s3": f"Last one. We sign out of Health, and this time we ask for the phone number. The Wallet never got that.{P}eSignet refuses the silent path, and the app tells you why, in plain words. We continue.{P}Now it's the normal eSignet flow, for Health itself. OTP again, and a consent screen that lists the phone number. We approve it.{P}Health is signed in, with its own consent this time. Silent sign-in never gave it more than you agreed to.",
 }
 for k,v in texts.items():
-    subprocess.run(["say","-v",VOICE,"-r",os.environ.get("RATE","200"),"-o",f"{k}.aiff",v],check=True)
+    subprocess.run(["say","-v",VOICE,"-r",RATE,"-o",f"{k}.aiff",v],check=True)
     out=subprocess.run(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",f"{k}.aiff"],capture_output=True,text=True).stdout.strip()
     print(k, out)

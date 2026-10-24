@@ -125,7 +125,7 @@ the UIN step.
    clean image), `scripts/fetch-backends.sh`, README "verify in ten minutes", design doc §10–11
    (conformance matrix, threat model), Postman bonus fixed (email), deck/docs claims reconciled,
    eSignet branch carries the docs + Postman collection.
-2. **Demo video re-recorded (2026-10-23):** `docs/demo-video.mp4`, 4:43, narrated (macOS `say`,
+2. **Demo video re-recorded (2026-10-23):** `docs/demo-video.mp4`, 4:56, narrated (macOS `say`,
    Ava Premium, `VOICE`/`RATE` env vars), rebuilt apps, re-consent completes on screen (OTP login + essential claims + Allow).
    Pipeline: `tools/video/` (`cards.py`, `e2e_card.py`, `narration*.py`, `cards_encode.sh`,
    `assemble2.sh`); segments driven by `tools/demo_driver.js` under `scrcpy --time-limit`. Replace

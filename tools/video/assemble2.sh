@@ -4,7 +4,7 @@
 # max(trim, narration + 1 s). Cards (card0..card6.mp4) already carry theirs.
 set -e
 cd "$(dirname "$0")"
-TRIM=(66 30 62)
+TRIM=(62 30 61)
 START=(0 0 2)
 i=1
 pick() { for ext in m4a wav mp3 aiff; do [ -f "$1.$ext" ] && { echo "$1.$ext"; return; }; done; echo "$1.aiff"; }
