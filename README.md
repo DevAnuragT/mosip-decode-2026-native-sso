@@ -33,7 +33,8 @@ python3 tests/native_sso_e2e.py                               # drives the whole
 
 The stack listens on http://localhost:8088 (eSignet), http://localhost:3000 (login UI with the modern
 theme), 8082 (mock identity) and 5455 (PostgreSQL); override with `ESIGNET_PORT`, `UI_PORT`,
-`MOCK_PORT`, `DB_PORT` (and `ESIGNET_HOST` for the issuer URL). Test identity: UIN `1774231323`,
+`MOCK_PORT`, `DB_PORT`. The issuer URL follows `ESIGNET_PORT` (`http://localhost:<port>`); set
+`ESIGNET_HOST` to a full URL such as `http://192.168.1.20:8088` only when phones reach the stack over the LAN. Test identity: UIN `1774231323`,
 OTP `111111`. The captcha is the Cloudflare Turnstile dummy site key (`1x00000000000000000000AA`),
 which passes by itself; no validator URL is configured locally.
 

@@ -47,7 +47,7 @@ services:
     environment:
       LOG_LEVEL: info
       PORT: 8088
-      MOSIP_ESIGNET_HOST: ${ESIGNET_HOST:-http://localhost:8088}
+      MOSIP_ESIGNET_HOST: ${ESIGNET_HOST:-http://localhost:${ESIGNET_PORT:-8088}}
       MOSIP_ESIGNET_OIDC_UI_SCHEME: http
       MOSIP_ESIGNET_OIDC_UI_HOSTNAME: localhost
       MOSIP_ESIGNET_OIDC_UI_PORT: ${UI_PORT:-3000}
