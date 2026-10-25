@@ -175,7 +175,7 @@ function phoneW(file, h) { return h * (1080 / (CROP[file] || 2412)); }
 function phone(slide, file, x, y, h, name) {
   const w = phoneW(file, h);
   rect(slide, x - 0.05, y - 0.05, w + 0.1, h + 0.1, C.text1, { radius: 0.12, name: "phone frame" });
-  slide.addImage({ path: (CROP[file] ? CROPDIR : IMG) + file, x, y, w, h, objectName: name });
+  slide.addImage({ path: (CROP[file] ? CROPDIR : IMG) + file, x, y, w, h, objectName: name, altText: name });
   return w;
 }
 // marker list (works on light and dark fills alike): a small ellipse plus one text box per item.
