@@ -49,6 +49,9 @@ python3 tests/native_sso_e2e.py   # 35 checks: issuance, binding, exchange, nega
 ## Dependencies
 
 Requires the ThunderID companion PR (`DeviceSecretProvider`, `DeviceSSOConsentProvider`, token
-exchange with device-secret actor tokens). Until that PR is merged and tagged, `go.mod`'s
-`replace github.com/thunder-id/thunderid` must point at the companion branch (a published
-pseudo-version of the fork); the PR will be updated to the upstream version once it exists.
+exchange with device-secret actor tokens). Until that PR is merged and tagged, this branch keeps
+`go.mod`'s `replace github.com/thunder-id/thunderid => ../../thunderid/backend`, i.e. it builds
+against a checkout of the companion branch `feature/ps03-native-sso-pre-rebase` of
+`DevAnuragT/thunderid` placed next to this repository (the submission repository's
+`scripts/fetch-backends.sh` and `deploy/docker-compose.yml` do exactly that). The replace will be
+dropped once the upstream ThunderID version exists; no other `go.mod` entry changes.
