@@ -2,7 +2,7 @@
 
 **MOSIP Decode 2026 · Problem statement 03 · eSignet | Enable Native SSO in eSignet Go for Mobile Apps**
 
-Team: _team name, members and college IDs to be filled in before submission._
+Team: **AlphaQ** _(members and college IDs to be added before submission)_
 
 ## Problem
 

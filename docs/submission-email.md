@@ -1,12 +1,12 @@
 # Submission email (send to decode@mosip.io before 26 Oct 2026, 23:59 IST)
 
-**Subject:** MOSIP Decode 2026 submission — Team <TEAM NAME> — PS03 Native SSO in eSignet Go
+**Subject:** MOSIP Decode 2026 submission — Team AlphaQ — PS03 Native SSO in eSignet Go
 
 Hello MOSIP Decode team,
 
 Please find our submission for **Problem Statement 03: eSignet | Enable Native SSO in eSignet Go for Mobile Apps**.
 
-- **Team name:** <TEAM NAME>
+- **Team name:** AlphaQ
 - **Members:** Anurag Thakur (<college>), <others>
 - **Problem statement:** 03 — Enable Native SSO in eSignet Go for Mobile Apps
 - **Source code (submission repository):** <GitHub URL>
