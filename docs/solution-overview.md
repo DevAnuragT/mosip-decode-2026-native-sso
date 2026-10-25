@@ -2,7 +2,15 @@
 
 **MOSIP Decode 2026 · Problem statement 03 · eSignet | Enable Native SSO in eSignet Go for Mobile Apps**
 
-Team: **AlphaQ**
+Team: **AlphaQ**, Atal Bihari Vajpayee Indian Institute of Information Technology and Management, Gwalior
+
+Members (each name links to the college ID):
+
+1. [Anurag Thakur](https://drive.google.com/file/d/1x5y1tkUJ1b0TVGKhW3qVYZklO9848vbG/view?usp=sharing)
+2. [Rucha Salpure](https://drive.google.com/file/d/1LAE4aivOiyK8A81N-eF_VrLmnZZ-ccFm/view)
+3. [Kushagra Agarwal](https://drive.google.com/file/d/1RiUXzR8HH2hE3yNqlSYZLOpzYpODRZZs/view?usp=drivesdk)
+4. [Arya Rathore](https://drive.google.com/file/d/1qBpme5qP7EB5f-vWBoiYlLWAUDO_WXtc/view?usp=drivesdk)
+5. [Vibhor Kumar](https://drive.google.com/file/d/1a_8veilyzE2L8w6ZNXtnYWdyc44r7JFU/view?usp=drivesdk)
 
 ## Problem
 
