@@ -2,7 +2,7 @@
 
 **MOSIP Decode 2026 · Problem statement 03 · eSignet | Enable Native SSO in eSignet Go for Mobile Apps**
 
-Team: **AlphaQ** _(members and college IDs to be added before submission)_
+Team: **AlphaQ**
 
 ## Problem
 
@@ -64,5 +64,5 @@ each is in the [README](../README.md#task-coverage).
 
 ## How to run
 
-Local stack, clients, end-to-end test and app build: [README](../README.md#run-the-whole-thing-locally)
+Local stack, clients, end-to-end test and app build: [README](../README.md#verify-it-in-ten-minutes-no-phone-needed)
 and [mobile-sample/README.md](../mobile-sample/README.md). Test identity: UIN `1774231323`, OTP `111111`.

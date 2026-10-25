@@ -9,16 +9,16 @@
  *
  * Usage: node tools/demo_driver.js <step...>
  *   steps: wallet-login | wallet-show | health-signin | health-show | health-reconsent | all
- * Env: SERIAL (adb serial, default FUHIYLMZUO8LAMY9), UIN (default 1774231323), OTP (default 111111)
+ * Env: SERIAL (adb serial; defaults to the only connected device), UIN (default 1774231323), OTP (default 111111)
  */
 const { execSync } = require("child_process");
 
-const SERIAL = process.env.SERIAL || "FUHIYLMZUO8LAMY9";
+const SERIAL = process.env.SERIAL || "";
 const UIN = process.env.UIN || "1774231323";
 const OTP = process.env.OTP || "111111";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const adb = (args) => execSync(`adb -s ${SERIAL} ${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+const adb = (args) => execSync(`adb ${SERIAL ? `-s ${SERIAL} ` : ""}${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
 const sh = (cmd) => execSync(cmd, { encoding: "utf8" });
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -108,7 +108,7 @@ async function webButtons() {
 
 // ---------- steps ----------
 async function walletLogin() {
-  adb("shell am force-stop com.brave.browser"); adb("shell am force-stop org.mosip.superapp");
+  adb("shell am force-stop com.brave.browser"); adb("shell am force-stop com.android.chrome"); adb("shell am force-stop org.mosip.superapp");
   adb("shell am start -n org.mosip.superapp/.MainActivity >/dev/null");
   await sleep(2500);
   // Start from a signed-out Wallet: the sign-out button sits at the very bottom of the page.

@@ -45,7 +45,7 @@ the OIDC UI container). See the repository `README.md` for the stack.
 python3 scripts/register_clients.py --esignet http://localhost:8088
 
 # 2. Build (JDK 17)
-JAVA_HOME=/opt/homebrew/opt/openjdk@17 ./gradlew assembleDebug
+./gradlew assembleDebug            # set JAVA_HOME to a JDK 17 if it is not the default
 
 # 3. Let the phone reach the laptop as "localhost" (repeat after every USB reconnect)
 adb reverse tcp:8088 tcp:8088
