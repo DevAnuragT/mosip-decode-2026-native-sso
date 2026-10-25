@@ -16,3 +16,4 @@ mobile-sample/*/src/main/res/raw/client_private_key.pem
 mobile-sample/scripts/keys/
 mobile-sample/scripts/clients.json
 postman/*environment.json
+node_modules/

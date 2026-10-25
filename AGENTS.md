@@ -133,7 +133,7 @@ the UIN step.
 3. Push `feature/ps03-native-sso` (+ `-pre-rebase`) of ThunderID and `feature/ps03-native-sso` of
    eSignet to the forks (ThunderID fork still to be created), repoint eSignet's `go.mod` replace at
    the pushed pseudo-version, open the PRs (`docs/pr-*.md`), push this repo, Drive folder, email.
-4. Pitch deck in `docs/` (text patched in place; 35/35, email example) — visual pass still pending.
+4. Pitch deck rebuilt from `tools/deck/build.js` (pptxgenjs; 13 slides, rendered and checked with LibreOffice on 2026-10-26).
 5. Follow-ups worth mentioning, not required: device-secret revocation on super-app sign-out,
    single-use `jti` tracking, child ID token on exchange, consent-screen line item for `device_sso`.
 
