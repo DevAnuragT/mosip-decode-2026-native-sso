@@ -41,7 +41,9 @@ from `repos/esignet-go` (PostgreSQL + mock identity system via Docker Compose, e
 the OIDC UI container). See the repository `README.md` for the stack.
 
 ```bash
-# 1. Keys + client registration (super app, child app, a rogue other-vendor client)
+# 1. Keys + client registration (super app, child app, a rogue other-vendor client).
+#    The apps do not build without this step: it writes the git-ignored res/raw/client_private_key.pem
+#    files (use --keys-only to generate the keys without a running eSignet).
 python3 scripts/register_clients.py --esignet http://localhost:8088
 
 # 2. Build (JDK 17)

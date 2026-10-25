@@ -11,6 +11,8 @@ jobs:
       - name: Unit tests (codec, client assertions, models)
         working-directory: mobile-sample
         run: ./gradlew --no-daemon :nativesso-sdk:testDebugUnitTest
+      - name: Generate the demo client keys (res/raw/client_private_key.pem is git-ignored)
+        run: python3 mobile-sample/scripts/register_clients.py --keys-only
       - name: Assemble both apps
         working-directory: mobile-sample
         run: ./gradlew --no-daemon :super-app:assembleDebug :child-app:assembleDebug
