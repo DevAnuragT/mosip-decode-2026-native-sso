@@ -38,7 +38,7 @@ const C = pres.SchemeColor;
 // ---------- grid ----------
 const L = 0.5, R = 9.5, W = R - L; // margins
 const TOP = 1.15, BOT = 4.95;       // content band (footer at 5.18)
-const GAP = 0.3, PAD = 0.2, RAD = 0.08, BADGE = 0.4;
+const GAP = 0.3, PAD = 0.2, RAD = 0, BADGE = 0.4; // RAD 0: square corners everywhere; macOS Quick Look ignores geometry on the shape path that renders reliably (see fix_ids.py)
 const FOOT = "MOSIP Decode 2026 · PS03 · Native SSO in eSignet (Go) · Team AlphaQ";
 
 pres.defineSlideMaster({ title: "DARK", background: { color: C.text1 }, objects: [] });
@@ -119,8 +119,8 @@ function bounds(what, x, y, w, h) {
 }
 function rect(slide, x, y, w, h, fill, o = {}) {
   bounds(o.name || "card", x, y, w, h);
-  slide.addShape(pres.ShapeType.roundRect, {
-    x, y, w, h, rectRadius: o.radius || RAD,
+  slide.addShape(pres.ShapeType.rect, {
+    x, y, w, h,
     fill: { color: fill },
     line: o.line ? { color: o.line, width: 0.75 } : { type: "none" },
     objectName: nm(o.name || "card"),
@@ -138,11 +138,11 @@ function text(slide, t, o) {
   slide.addText(t, opt);
 }
 function badge(slide, x, y, label, color) {
-  slide.addShape(pres.ShapeType.ellipse, { x, y, w: BADGE, h: BADGE, fill: { color }, line: { type: "none" }, objectName: nm("badge") });
+  slide.addShape(pres.ShapeType.rect, { x, y, w: BADGE, h: BADGE, fill: { color }, line: { type: "none" }, objectName: nm("badge") });
   slide.addText(String(label), { x, y, w: BADGE, h: BADGE, fontSize: 12, bold: true, fontFace: BODY, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: nm("badge text") });
 }
 function dot(slide, x, y, color) {
-  slide.addShape(pres.ShapeType.ellipse, { x, y, w: 0.1, h: 0.1, fill: { color }, line: { type: "none" }, objectName: nm("marker") });
+  slide.addShape(pres.ShapeType.rect, { x, y, w: 0.1, h: 0.1, fill: { color }, line: { type: "none" }, objectName: nm("marker") });
 }
 // straight connectors only: horizontal drawn left to right, vertical top to bottom; arrowhead at the end
 function hline(slide, x1, x2, y, color, head) {

@@ -9,11 +9,17 @@ text that overflows its box or any shape outside the slide.
 cd tools/deck
 npm install pptxgenjs jszip                        # once
 SKILL=<dir containing scripts/apply_theme.js> NODE_PATH=$PWD/node_modules node build.js ../../docs/pitch-deck.pptx
-python3 fix_ids.py ../../docs/pitch-deck.pptx     # required: unique shape ids (Quick Look otherwise mixes slides)
+python3 fix_ids.py ../../docs/pitch-deck.pptx     # required, see below
 ```
 
 `SKILL` points at a directory containing `scripts/apply_theme.js`, which writes the theme colours
-into the deck after pptxgenjs has written it. `crop/` holds the two phone screenshots cropped at a
+into the deck after pptxgenjs has written it.
+
+`fix_ids.py` is required for macOS: Apple's Quick Look (and Keynote import) renders decks that contain
+plain autoshapes non-deterministically, drawing shapes from other slides on top of the wrong slide.
+The script gives every shape a deck-unique id and marks text-less filled shapes as text boxes with
+RGB colours, which puts them on the rendering path that is stable. Quick Look ignores preset geometry
+on that path, so the design uses square corners throughout; PowerPoint and LibreOffice are unaffected. `crop/` holds the two phone screenshots cropped at a
 card boundary for slides 6 and 11; the full screenshots are in `docs/images/`.
 
 Visual check (LibreOffice for the PowerPoint look, Quick Look for the macOS look):
@@ -21,5 +27,5 @@ Visual check (LibreOffice for the PowerPoint look, Quick Look for the macOS look
 ```bash
 soffice --headless --convert-to pdf --outdir /tmp docs/pitch-deck.pptx
 gs -q -dNOPAUSE -dBATCH -sDEVICE=png16m -r60 -sOutputFile=/tmp/s-%02d.png /tmp/pitch-deck.pdf
-qlmanage -t -s 1400 -o /tmp docs/pitch-deck.pptx   # first slide only; split the deck for the rest
+qlmanage -p docs/pitch-deck.pptx                   # Quick Look preview of the whole deck; check the thumbnail sidebar too
 ```
