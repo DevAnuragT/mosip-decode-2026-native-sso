@@ -1,6 +1,6 @@
 # PR: Native SSO for Mobile Apps — device secret provider, derived consent, token exchange clients
 
-Target: `mosip/esignet` `develop-go` · Branch: `feature/ps03-native-sso` (10 commits, DCO signed-off)
+Target: `mosip/esignet` `develop-go` · Branch: `feature/ps03-native-sso` (12 commits, DCO signed-off)
 
 ## Summary
 

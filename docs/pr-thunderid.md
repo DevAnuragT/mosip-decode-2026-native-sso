@@ -1,6 +1,6 @@
 # PR: OpenID Connect Native SSO for Mobile Apps (device secrets + token exchange)
 
-Target: `thunder-id/thunderid` `main` · Branch: `feature/ps03-native-sso` (10 commits, DCO signed-off)
+Target: `thunder-id/thunderid` `main` · Branch: `feature/ps03-native-sso` (11 commits, DCO signed-off)
 
 ### Purpose
 
