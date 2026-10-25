@@ -65,6 +65,9 @@ The detailed design document is `docs/design-document.md` (also shipped upstream
 
 ## Task coverage
 
+Numbering and wording follow the "Expected Tasks" section of the PS03 problem statement (two
+prerequisites, ten mandatory tasks, one bonus task).
+
 | PS03 task | Status | Where |
 |---|---|---|
 | 1 `device_sso` scope | done | eSignet `deployment.yaml`, ThunderID protocol-scope handling |

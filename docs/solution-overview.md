@@ -59,8 +59,10 @@ secret is opaque to the apps. Limits (single-use `jti`, revocation on sign-out) 
 
 ## Task coverage
 
-All PS03 tasks 1 to 10 and the re-consent bonus are implemented; the table with the code location for
-each is in the [README](../README.md#task-coverage).
+The problem statement lists two prerequisites (two apps signed with one certificate; "Sign in with
+eSignet" in the first app) and ten numbered mandatory tasks under "Expected Tasks", plus the bonus
+re-consent task. All of them are implemented. The table in the [README](../README.md#task-coverage)
+uses the problem statement's numbering and names the code location for each.
 
 ## How to run
 
