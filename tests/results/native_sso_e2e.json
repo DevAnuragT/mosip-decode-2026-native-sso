@@ -1,6 +1,6 @@
 {
   "esignet": "http://localhost:8088",
-  "ran_at": "2026-10-25T22:09:44Z",
+  "ran_at": "2026-10-26T09:40:29Z",
   "results": [
     {
       "status": "PASS",
@@ -45,7 +45,7 @@
     {
       "status": "PASS",
       "name": "id_token carries sid",
-      "detail": "01a1751c-ca7f-7f4e-b88b-244d3b21ca71"
+      "detail": "01a17795-31bf-7285-a1e9-cccf04c1d4e2"
     },
     {
       "status": "PASS",

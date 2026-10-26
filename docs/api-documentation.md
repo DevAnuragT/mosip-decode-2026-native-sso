@@ -182,7 +182,7 @@ grant_type=urn:ietf:params:oauth:grant-type:token-exchange
 | `subject_token_type` | must be `urn:ietf:params:oauth:token-type:id_token` |
 | `actor_token_type` | `urn:openid:params:token-type:device-secret` selects the Native SSO path |
 | `audience` | required, must equal the issuer URL (Native SSO §4.1); `invalid_target` otherwise |
-| `scope` | optional; must include `openid` and be a subset of the scope on the device secret; `device_sso` is rejected, and it is never inherited when `scope` is omitted |
+| `scope` | optional; must include `openid` and be a subset of both the scope on the device secret and the client's registered scopes; `device_sso` is rejected, and it is never inherited when `scope` is omitted (an omitted `scope` inherits the registered subset of the device secret's scope) |
 | `DPoP` header | proof key must equal the device secret's `cnf.jkt` (Key A) |
 
 Success: an access token bound to Key A whose `act.sub` is the super app's client id. No `id_token`, never a `device_secret`.
