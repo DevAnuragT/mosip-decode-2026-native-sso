@@ -182,6 +182,7 @@ grant_type=urn:ietf:params:oauth:grant-type:token-exchange
 | `subject_token_type` | must be `urn:ietf:params:oauth:token-type:id_token` |
 | `actor_token_type` | `urn:openid:params:token-type:device-secret` selects the Native SSO path |
 | `audience` | required, must equal the issuer URL (Native SSO §4.1); `invalid_target` otherwise |
+| `device_secret` (refresh_token grant) | optional; the device secret the app already holds. While `device_sso` stays in the refreshed scopes a valid one is kept, a missing or invalid one is replaced, and the refreshed `id_token` carries the matching `ds_hash` and `sid` |
 | `scope` | optional; must include `openid` and be a subset of both the scope on the device secret and the client's registered scopes; `device_sso` is rejected, and it is never inherited when `scope` is omitted (an omitted `scope` inherits the registered subset of the device secret's scope) |
 | `DPoP` header | proof key must equal the device secret's `cnf.jkt` (Key A) |
 
