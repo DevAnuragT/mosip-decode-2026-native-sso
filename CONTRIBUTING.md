@@ -9,7 +9,7 @@ protocol and its security argument are in `docs/design-document.md`.
 | Path | Git | Branch | Contents |
 |---|---|---|---|
 | this repository | own history | `master` | Android SDK + reference apps (`mobile-sample/`), end-to-end test (`tests/`), Postman collection (`postman/`), one-command stack (`deploy/`), documents (`docs/`), login theme (`ui-theme/`), demo tooling (`tools/`). |
-| `repos/thunderid` | clone of the ThunderID fork, fetched by `scripts/fetch-backends.sh` (git-ignored here) | `feature/ps03-native-sso` (on `main`) and `feature/ps03-native-sso-pre-rebase` (same commits on the older base that eSignet `develop-go` pins) | Engine side of the protocol. |
+| `repos/thunderid` | clone of the ThunderID fork, fetched by `scripts/fetch-backends.sh` (git-ignored here) | `feature/ps03-native-sso` (one squashed commit on the maintainers' `feature/1.1.0/oidc-native-sso` release line, the PR branch) and `feature/ps03-native-sso-pre-rebase` (the same work as separate commits on the older base that eSignet `develop-go` pins) | Engine side of the protocol. |
 | `repos/esignet-go` | clone of the eSignet fork, fetched by the same script | `feature/ps03-native-sso` (on `develop-go`) | eSignet side: `DeviceSecretProvider`, consent, client registration, docs, OpenAPI. |
 
 Version skew to keep in mind: eSignet `develop-go` pins ThunderID at an older commit (Go 1.26);

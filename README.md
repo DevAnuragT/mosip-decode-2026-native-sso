@@ -103,7 +103,7 @@ maps every organiser requirement to its evidence.
 ## Upstream contributions
 
 Both feature branches are prepared as upstream pull requests (DCO signed-off):
-`repos/thunderid` → `thunder-id/thunderid` `main`; `repos/esignet-go` → `mosip/esignet` `develop-go`.
+`repos/thunderid` → `thunder-id/thunderid` `feature/1.1.0/oidc-native-sso` (the release line the maintainers requested, as one squashed commit); `repos/esignet-go` → `mosip/esignet` `develop-go`.
 Draft PR descriptions are in `docs/pr-thunderid.md` and `docs/pr-esignet.md`.
 
 ## License
