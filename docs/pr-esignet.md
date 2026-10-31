@@ -1,6 +1,6 @@
 # PR: Native SSO for Mobile Apps — device secret provider, derived consent, token exchange clients
 
-Target: `mosip/esignet` `develop-go` · Branch: `feature/ps03-native-sso` (13 commits, DCO signed-off)
+Target: `mosip/esignet` `develop-go` · Branch: `feature/ps03-native-sso` (15 commits incl. the `develop-go` merge, DCO signed-off)
 
 ## Summary
 
@@ -28,8 +28,9 @@ secret for its own DPoP-bound access token without a second login or consent scr
     the sibling's claims and authorization scopes, and records a consent for the sibling with an
     audit row; an existing broader consent of the sibling is kept (widened, never narrowed; one
     history row per change); otherwise the engine answers `interaction_required`.
-- Client management accepts the `token_exchange` grant; the engine client carries the registered
-  grant types; deployment defaults allow the token exchange grant and advertise `device_sso`.
+- Client management accepts the `token_exchange` grant and the `allowed_child_clients` additional
+  config (validated as a non-empty array of unique client ids); the engine client carries the
+  registered grant types; deployment defaults allow the token exchange grant and advertise `device_sso`.
 - Configuration: `MOSIP_ESIGNET_DEVICE_SECRET_VALIDITY_SECONDS` (default 30 days).
 - Docs: `docs/native-sso.md` (design, flows, API, spec-conformance matrix, threat model, client
   checklist), OpenAPI (`/oauth2/token` token-exchange parameters incl. `audience`, `device_secret`,
@@ -51,7 +52,7 @@ python3 tests/native_sso_e2e.py   # 35 checks: issuance, binding, exchange, nega
 Requires the ThunderID companion PR (`DeviceSecretProvider`, `DeviceSSOConsentProvider`, token
 exchange with device-secret actor tokens). Until that PR is merged and tagged, this branch keeps
 `go.mod`'s `replace github.com/thunder-id/thunderid => ../../thunderid/backend`, i.e. it builds
-against a checkout of the companion branch `feature/ps03-native-sso-pre-rebase` of
-`DevAnuragT/thunderid` placed next to this repository (the submission repository's
+against a checkout of the companion branch `feature/ps03-native-sso-1.1.x` of
+`DevAnuragT/thunderid` (the same commit on the exact `1.1.x` ThunderID commit `develop-go` pins) placed next to this repository (the submission repository's
 `scripts/fetch-backends.sh` and `deploy/docker-compose.yml` do exactly that). The replace will be
 dropped once the upstream ThunderID version exists; no other `go.mod` entry changes.

@@ -9,15 +9,16 @@ protocol and its security argument are in `docs/design-document.md`.
 | Path | Git | Branch | Contents |
 |---|---|---|---|
 | this repository | own history | `master` | Android SDK + reference apps (`mobile-sample/`), end-to-end test (`tests/`), Postman collection (`postman/`), one-command stack (`deploy/`), documents (`docs/`), login theme (`ui-theme/`), demo tooling (`tools/`). |
-| `repos/thunderid` | clone of the ThunderID fork, fetched by `scripts/fetch-backends.sh` (git-ignored here) | `feature/ps03-native-sso` (one squashed commit on the maintainers' `feature/1.1.0/oidc-native-sso` release line, the PR branch) and `feature/ps03-native-sso-pre-rebase` (the same work as separate commits on the older base that eSignet `develop-go` pins) | Engine side of the protocol. |
+| `repos/thunderid` | clone of the ThunderID fork, fetched by `scripts/fetch-backends.sh` (git-ignored here) | `feature/ps03-native-sso` (one squashed commit on the maintainers' `feature/1.1.0/oidc-native-sso` release line, the PR branch) and `feature/ps03-native-sso-1.1.x` (the same commit cherry-picked onto the ThunderID `1.1.x` commit that eSignet `develop-go` pins; this is the checkout eSignet builds against) | Engine side of the protocol. |
 | `repos/esignet-go` | clone of the eSignet fork, fetched by the same script | `feature/ps03-native-sso` (on `develop-go`) | eSignet side: `DeviceSecretProvider`, consent, client registration, docs, OpenAPI. |
 
-Version skew to keep in mind: eSignet `develop-go` pins ThunderID at an older commit (Go 1.26);
-ThunderID `main` requires Go 1.27 and changed the authentication-provider interface, so eSignet does
-not compile against ThunderID `main`. eSignet's `go.mod` therefore replaces the ThunderID module with
-the `-pre-rebase` branch (`../../thunderid/backend` in a local checkout; the compose build does the
-same inside the image). Keep the two ThunderID branches in sync by cherry-picking, and do not commit a
-`go mod tidy` that bumps eSignet's other dependencies.
+Version skew to keep in mind: eSignet `develop-go` pins ThunderID at a `1.1.x` commit (Go 1.26), while
+the maintainers asked for the ThunderID PR to target the `feature/1.1.0/oidc-native-sso` line, which
+is older than that commit. eSignet's `go.mod` therefore replaces the ThunderID module with a local
+checkout (`../../thunderid/backend`; the compose build copies the same directory into the image), and
+that checkout must be the `-1.1.x` branch: the pinned `1.1.x` commit plus the Native SSO commit. Keep
+the two ThunderID branches in sync by cherry-picking, and do not commit a `go mod tidy` that bumps
+eSignet's other dependencies.
 
 ## 2. What lives where
 
@@ -104,7 +105,7 @@ Useful resets:
 - Commits are DCO signed-off (`git commit -s`). Upstream Go files carry the MPL-2.0 header used by
   eSignet.
 - Run the end-to-end script after any backend change; rebuild and reinstall both APKs after SDK changes.
-- Keep the two ThunderID branches identical in content; eSignet builds against the `-pre-rebase` one.
+- Keep the two ThunderID branches identical in content; eSignet builds against the `-1.1.x` one.
 - Never commit the Postman environment or the generated client private keys.
 
 ## 5. Ideas for follow-up work

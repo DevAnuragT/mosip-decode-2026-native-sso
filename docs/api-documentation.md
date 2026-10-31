@@ -39,7 +39,7 @@ grant type and these `additionalConfig` keys:
 |---|---|
 | `grantTypes` | `["authorization_code"]` for a super app; `["authorization_code", "token_exchange"]` for a child app (the registration validator now accepts `token_exchange`) |
 | `additionalConfig.allowed_authorization_scopes` | must contain `device_sso` for every app that issues or redeems a device secret |
-| `additionalConfig.allowed_child_clients` | optional, on the super app: client ids of siblings that belong to a different relying party but may redeem its device secrets |
+| `additionalConfig.allowed_child_clients` | optional, on the super app: client ids of siblings that belong to a different relying party but may redeem its device secrets; validated as a non-empty array of unique, non-blank client ids |
 | `relyingPartyId` | apps with the same value form one vendor family |
 | `publicKey` | JWK of the app's `private_key_jwt` key; include a `kid` (RFC 7638 thumbprint). The key signs PS256 assertions, so omit `alg`. |
 | `additionalConfig.require_pushed_authorization_requests`, `dpop_bound_access_tokens`, `require_pkce` | `true` for the demo apps |
