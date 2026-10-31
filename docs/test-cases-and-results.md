@@ -6,7 +6,7 @@ feature branches.
 ## 1. End-to-end protocol test (`tests/native_sso_e2e.py`)
 
 Runs against a live eSignet (Go) with the mock identity system, playing both apps from the laptop.
-35/35 checks pass; the JSON report is in `tests/results/native_sso_e2e.json` (tracked in git).
+46/46 checks pass; the JSON report is in `tests/results/native_sso_e2e.json` (tracked in git).
 
 | # | Case | Expected | Result |
 |---|---|---|---|
@@ -45,6 +45,17 @@ Runs against a live eSignet (Go) with the mock identity system, playing both app
 | C8 | Exchange without `scope` | 200, granted `openid profile` | PASS |
 | N11 | 10.b inherited scope never contains `device_sso` | absent | PASS |
 | N12 | ID token of one login with the device secret of another | `invalid_grant` "ds_hash … does not match" | PASS |
+| R1 | Super app registered with `refresh_token` receives a refresh token on the `device_sso` login | present | PASS |
+| R2 | Refresh-token grant (DPoP, `device_secret` presented) issues new access and ID tokens | 200 | PASS |
+| R3 | A valid presented `device_secret` is kept (§3.4.3) | response `device_secret` equals the presented one | PASS |
+| R4 | Refreshed ID token keeps `ds_hash` and `sid` | equal to the login's | PASS |
+| R5 | Refreshed access token bound to Key A | `cnf.jkt` equal | PASS |
+| R6 | `device_sso` stays off the refreshed access token's `scope` claim | absent | PASS |
+| R7 | Refresh without a `device_secret` issues a new one | present, different | PASS |
+| R8 | Refreshed ID token is bound to the new device secret | `ds_hash` = SHA-256(new secret) | PASS |
+| R9 | Child app redeems the refreshed ID token with the new device secret | 200 | PASS |
+| R10 | Refresh with a DPoP proof from another key while presenting the Key A secret (confidential client, RFC 9449 §5: refresh token not DPoP-bound) | the presented secret is not kept; a new one is issued | PASS |
+| R11 | … refreshed access token and new device secret are bound to the presented key | `cnf.jkt` = Key B, `ds_hash` = SHA-256(new secret) | PASS |
 
 ## 2. Unit tests
 

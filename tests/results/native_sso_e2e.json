@@ -1,6 +1,6 @@
 {
   "esignet": "http://localhost:8088",
-  "ran_at": "2026-10-31T19:09:19Z",
+  "ran_at": "2026-10-31T19:32:57Z",
   "results": [
     {
       "status": "PASS",
@@ -45,7 +45,7 @@
     {
       "status": "PASS",
       "name": "id_token carries sid",
-      "detail": "01a1935d-c873-7faf-805d-934ca403938b"
+      "detail": "01a19373-6880-701a-bd06-e72de2942e53"
     },
     {
       "status": "PASS",
@@ -176,6 +176,61 @@
       "status": "PASS",
       "name": "id_token of one login with the device secret of another is refused",
       "detail": "invalid_grant: ds_hash in subject_token does not match actor_token"
+    },
+    {
+      "status": "PASS",
+      "name": "refresh_token issued to the super app",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refresh issues new access and ID tokens",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "a valid presented device_secret is kept",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refreshed id_token keeps ds_hash and sid",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refreshed access token bound to Key A (cnf.jkt)",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "device_sso stays off the refreshed access token's scope claim",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refresh without a device_secret issues a new one",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refreshed id_token is bound to the new device_secret",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "child app redeems the refreshed id_token with the new device_secret",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "a device_secret bound to another DPoP key is not kept on refresh",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "refreshed tokens and the new device_secret are bound to the presented key",
+      "detail": ""
     }
   ]
 }

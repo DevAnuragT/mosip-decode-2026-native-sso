@@ -340,6 +340,21 @@ class Esignet:
         _, _, body = request("POST", self.token, form, {"DPoP": dpop_proof}, form=True)
         return json.loads(body)
 
+    # --- super app: refresh-token grant ------------------------------------------------------
+    def refresh(self, key: RsaClientKey, refresh_token: str, dpop_proof: str, device_secret: str | None = None) -> dict:
+        """Refresh-token grant of the first app. Native SSO 1.0 §3.4.3: the app may present the
+        device_secret it holds; while device_sso stays in scope a valid one is kept, otherwise a
+        new one is issued, and the refreshed ID token carries ds_hash and sid either way."""
+        form = {
+            "grant_type": "refresh_token", "refresh_token": refresh_token, "client_id": key.client_id,
+            "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+            "client_assertion": key.assertion(self.meta["issuer"]),
+        }
+        if device_secret is not None:
+            form["device_secret"] = device_secret
+        _, _, body = request("POST", self.token, form, {"DPoP": dpop_proof}, form=True)
+        return json.loads(body)
+
     def user_info(self, access_token: str, dpop_proof: str) -> dict:
         _, _, body = request("GET", self.userinfo, headers={"Authorization": f"DPoP {access_token}", "DPoP": dpop_proof})
         return json.loads(body) if body.lstrip().startswith("{") else jwt_payload(body)
@@ -469,6 +484,40 @@ def main() -> int:
     expect_oauth_error(report, "id_token of one login with the device secret of another is refused",
                        lambda: es.exchange(child_key, id_token, device_secret2, "openid", key_a.proof("POST", es.token)),
                        "invalid_grant", "does not match")
+
+    print("== 6. refresh-token grant keeps the Native SSO binding (§3.4.3)")
+    refresh_token = second.get("refresh_token")
+    report.expect(bool(refresh_token), "refresh_token issued to the super app")
+    try:
+        kept = es.refresh(super_key, refresh_token, key_a.proof("POST", es.token), device_secret=device_secret2)
+        kac, kic = jwt_payload(kept["access_token"]), jwt_payload(kept["id_token"])
+        report.expect(bool(kept.get("access_token")) and bool(kept.get("id_token")), "refresh issues new access and ID tokens")
+        report.expect(kept.get("device_secret") == device_secret2, "a valid presented device_secret is kept")
+        report.expect(kic.get("ds_hash") == sha256_b64url(device_secret2) and kic.get("sid") == jwt_payload(id_token2).get("sid"),
+                      "refreshed id_token keeps ds_hash and sid")
+        report.expect((kac.get("cnf") or {}).get("jkt") == key_a.thumbprint(), "refreshed access token bound to Key A (cnf.jkt)")
+        report.expect("device_sso" not in (kac.get("scope") or "").split(), "device_sso stays off the refreshed access token's scope claim")
+        replaced = es.refresh(super_key, kept.get("refresh_token") or refresh_token, key_a.proof("POST", es.token))
+        new_secret = replaced.get("device_secret")
+        report.expect(bool(new_secret) and new_secret != device_secret2, "refresh without a device_secret issues a new one")
+        report.expect(jwt_payload(replaced["id_token"]).get("ds_hash") == sha256_b64url(new_secret or ""),
+                      "refreshed id_token is bound to the new device_secret")
+        redeemed = es.exchange(child_key, replaced["id_token"], new_secret, "openid", key_a.proof("POST", es.token))
+        report.expect(bool(redeemed.get("access_token")), "child app redeems the refreshed id_token with the new device_secret")
+    except HttpError as err:
+        report.fail("refresh-token grant with device_secret", str(err)[:300])
+    # The super app is a confidential client (private_key_jwt), so its refresh token is not DPoP-bound
+    # (RFC 9449 §5) and a refresh with another key is a legitimate key rotation. What must not happen
+    # is the old secret surviving: a presented secret bound to Key A is not kept for Key B's proof.
+    try:
+        rotated = es.refresh(super_key, refresh_token, key_b.proof("POST", es.token), device_secret=device_secret2)
+        report.expect(bool(rotated.get("device_secret")) and rotated.get("device_secret") != device_secret2,
+                      "a device_secret bound to another DPoP key is not kept on refresh")
+        report.expect((jwt_payload(rotated["access_token"]).get("cnf") or {}).get("jkt") == key_b.thumbprint()
+                      and jwt_payload(rotated["id_token"]).get("ds_hash") == sha256_b64url(rotated.get("device_secret") or ""),
+                      "refreshed tokens and the new device_secret are bound to the presented key")
+    except HttpError as err:
+        report.fail("a device_secret bound to another DPoP key is not kept on refresh", str(err)[:300])
 
     os.makedirs(os.path.dirname(args.report), exist_ok=True)
     with open(args.report, "w") as fh:

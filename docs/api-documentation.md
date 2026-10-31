@@ -37,7 +37,7 @@ grant type and these `additionalConfig` keys:
 
 | Field | Meaning |
 |---|---|
-| `grantTypes` | `["authorization_code"]` for a super app; `["authorization_code", "token_exchange"]` for a child app (the registration validator now accepts `token_exchange`) |
+| `grantTypes` | `["authorization_code", "refresh_token"]` for a super app (the refresh grant renews its tokens without a new login and keeps the device-secret binding, §3.4.3); `["authorization_code", "token_exchange"]` for a child app (the registration validator now accepts `token_exchange` and `refresh_token`) |
 | `additionalConfig.allowed_authorization_scopes` | must contain `device_sso` for every app that issues or redeems a device secret |
 | `additionalConfig.allowed_child_clients` | optional, on the super app: client ids of siblings that belong to a different relying party but may redeem its device secrets; validated as a non-empty array of unique, non-blank client ids |
 | `relyingPartyId` | apps with the same value form one vendor family |

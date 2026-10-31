@@ -35,7 +35,9 @@ CLIENTS = [
         "relyingPartyId": "mosip-demo-vendor",
         "redirectUris": ["org.mosip.superapp://callback"],
         "userClaims": ["name", "email", "picture", "phone_number", "birthdate", "gender"],
-        "grantTypes": ["authorization_code"],
+        # refresh_token: the super app renews its tokens without a new login; the refreshed ID token
+        # keeps its device-secret binding (Native SSO 1.0 §3.4.3).
+        "grantTypes": ["authorization_code", "refresh_token"],
         "additionalConfig": {
             "require_pushed_authorization_requests": True,
             "dpop_bound_access_tokens": True,

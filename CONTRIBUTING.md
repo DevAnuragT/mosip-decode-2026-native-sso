@@ -84,6 +84,12 @@ python3 mobile-sample/scripts/register_clients.py
 python3 tests/native_sso_e2e.py
 ```
 
+Stack configuration: the compose file mounts `ui-theme/esignet-data` over the container's
+`/home/mosip/data`, so the running stack reads `ui-theme/esignet-data/deployment.yaml` (the upstream
+data directory plus the theme). A change to `repos/esignet-go/esignet-service/data/deployment.yaml`
+must be mirrored there. `ESIGNET_LOG_LEVEL=debug docker compose -f deploy/docker-compose.yml up -d
+--force-recreate esignet` turns on the engine's debug log (grant-handler rejection reasons).
+
 Test identity: UIN `1774231323`, OTP `111111`. The captcha is Cloudflare Turnstile's public test
 key, which passes without a tap; the local eSignet has no captcha validator configured and accepts any
 non-empty token. Never automate a real captcha.

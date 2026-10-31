@@ -38,6 +38,11 @@ DPoP-bound access token. Nothing changes for deployments that do not configure a
   discovery advertises `native_sso_supported: true` when a provider is configured.
 - `ValidateNativeSSOSubjectToken`: an ID token past its `exp` is still a valid subject token on a
   device-secret exchange (§6.3); signature, `nbf`, `typ` and revocation stay enforced.
+- **Refresh-token grant** (§3.3, §3.4.3): while `device_sso` stays in the refreshed scopes, a valid
+  `device_secret` presented on the request (same subject, client and DPoP key, with a `sid`) is kept,
+  otherwise a new one is issued; the refreshed ID token carries `ds_hash` and `sid`, and the response
+  carries `device_secret`. A client's configured default audience is treated like the `client_id`
+  (not a resource server) when the refreshed token was OIDC-only.
 - Constants: `ScopeDeviceSSO`, `TokenTypeIdentifierDeviceSecret`, `ErrorInteractionRequired`.
 
 ### Related Issues

@@ -28,9 +28,13 @@ secret for its own DPoP-bound access token without a second login or consent scr
     the sibling's claims and authorization scopes, and records a consent for the sibling with an
     audit row; an existing broader consent of the sibling is kept (widened, never narrowed; one
     history row per change); otherwise the engine answers `interaction_required`.
-- Client management accepts the `token_exchange` grant and the `allowed_child_clients` additional
-  config (validated as a non-empty array of unique client ids); the engine client carries the
-  registered grant types; deployment defaults allow the token exchange grant and advertise `device_sso`.
+- Client management accepts the `token_exchange` and `refresh_token` grants and the
+  `allowed_child_clients` additional config (validated as a non-empty array of unique client ids);
+  the engine client carries the registered grant types; deployment defaults allow the token exchange
+  and refresh grants and advertise `device_sso`. A super app registered with `refresh_token` renews
+  its tokens without a new login and keeps the device-secret binding (§3.4.3); the engine's inbound
+  client declares eSignet's pairwise subject (the identity system's PSU token) as a mapped subject so
+  the refresh grant does not try to resolve it as an engine entity.
 - Configuration: `MOSIP_ESIGNET_DEVICE_SECRET_VALIDITY_SECONDS` (default 30 days).
 - Docs: `docs/native-sso.md` (design, flows, API, spec-conformance matrix, threat model, client
   checklist), OpenAPI (`/oauth2/token` token-exchange parameters incl. `audience`, `device_secret`,
@@ -44,7 +48,7 @@ secret for its own DPoP-bound access token without a second login or consent scr
 ```bash
 cd esignet-service && go test ./...
 # end to end (docker-compose dependent services + ./make.sh run), from the hackathon repository:
-python3 tests/native_sso_e2e.py   # 35 checks: issuance, binding, exchange, negative cases, re-consent
+python3 tests/native_sso_e2e.py   # 46 checks: issuance, binding, exchange, refresh, negative cases, re-consent
 ```
 
 ## Dependencies
